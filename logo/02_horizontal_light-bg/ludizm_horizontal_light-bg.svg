@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="12 8 344 85" role="img" aria-label="Ludizm">
+  <title>Ludizm</title>
+  <g fill="none" stroke-linecap="round" stroke-width="8.5">
+    <path d="M50 14 V38" stroke="#4CAF50"/>
+    <path d="M50 38 V87" stroke="#3498DB"/>
+    <path d="M18 38 H82" stroke="#3498DB"/>
+    <path d="M47 42 L21 71" stroke="#3498DB"/>
+    <path d="M53 42 L79 71" stroke="#3498DB"/>
+    <path d="M36 72 H64" stroke="#3498DB"/>
+  </g>
+  <g transform="translate(118 29) scale(0.21)" fill="none" stroke="#3498DB" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 0 V200 H115"/>
+    <path d="M195 0 V130 A65 65 0 0 0 325 130 V0"/>
+    <path d="M405 0 H455 A100 100 0 0 1 455 200 H405 Z"/>
+    <path d="M635 0 V200"/>
+    <path d="M715 0 H845 L715 200 H845"/>
+    <path d="M925 200 V0 L1005 125 L1085 0 V200"/>
+  </g>
+</svg>

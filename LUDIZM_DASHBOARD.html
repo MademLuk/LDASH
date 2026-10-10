@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ludizm Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20100%20100%22%20role%3D%22img%22%20aria-label%3D%22Ludizm%22%3E%20%3Ctitle%3ELudizm%3C/title%3E%20%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2222%22%20fill%3D%22%23000000%22/%3E%20%3Cg%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-width%3D%228.5%22%3E%20%3Cpath%20d%3D%22M50%2014%20V38%22%20stroke%3D%22%239BE36B%22/%3E%20%3Cpath%20d%3D%22M50%2038%20V87%22%20stroke%3D%22%23FFFFFF%22/%3E%20%3Cpath%20d%3D%22M18%2038%20H82%22%20stroke%3D%22%23FFFFFF%22/%3E%20%3Cpath%20d%3D%22M47%2042%20L21%2071%22%20stroke%3D%22%23FFFFFF%22/%3E%20%3Cpath%20d%3D%22M53%2042%20L79%2071%22%20stroke%3D%22%23FFFFFF%22/%3E%20%3Cpath%20d%3D%22M36%2072%20H64%22%20stroke%3D%22%23FFFFFF%22/%3E%20%3C/g%3E%20%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* HUD theme: dark cockpit by default, "daylight" when switched to light */
+:root {
+  --bg: #04070B; --bg2: #0A1420; --glass: rgba(140, 190, 230, .06); --glass-strong: rgba(10, 18, 28, .72);
+  --line: rgba(160, 205, 240, .16); --line-strong: rgba(160, 205, 240, .32);
+  --ink: #E6F1FA; --muted: #7F96AA; --hud: #FF6A13; --hud-soft: rgba(255, 106, 19, .14);
+  --grid: rgba(120, 180, 230, .05); --shade: rgba(0, 4, 8, .55); --blocked-bg: rgba(255, 106, 19, .08);
+  --s-green: #39F5A0; --s-orange: #FFB020; --s-red: #FF4D4D; --s-parked: #7C8794; --s-unknown: #7C8794;
+  --glow: 0 0 10px;
+}
+:root[data-theme="light"] {
+  --bg: #DCE6EE; --bg2: #F2F6F9; --glass: rgba(255, 255, 255, .55); --glass-strong: rgba(248, 251, 253, .82);
+  --line: rgba(20, 50, 80, .14); --line-strong: rgba(20, 50, 80, .3);
+  --ink: #0E1B26; --muted: #4F6576; --hud: #E05500; --hud-soft: rgba(224, 85, 0, .1);
+  --grid: rgba(20, 60, 100, .06); --shade: rgba(20, 35, 50, .25); --blocked-bg: rgba(224, 85, 0, .07);
+  --s-green: #129A5C; --s-orange: #D98200; --s-red: #D23030; --s-parked: #8794A0; --glow: 0 0 0;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { color: var(--ink); font: 15px/1.5 "Space Grotesk", system-ui, sans-serif; min-height: 100vh;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(52, 152, 219, .16), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(255, 106, 19, .08), transparent 60%),
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(180deg, var(--bg2), var(--bg));
+  background-attachment: fixed; }
+body::after { content: ""; position: fixed; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px); }
+:root[data-theme="light"] body::after { display: none; }
+body.locked { overflow: hidden; }
+.wrap { max-width: 1140px; margin: 0 auto; padding: 22px 24px 48px; position: relative; z-index: 1; }
+.mono { font-family: "JetBrains Mono", monospace; }
+.label { font: 500 11px "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .16em; color: var(--muted); }
+
+/* Glass panel with HUD corner brackets */
+.glass { position: relative; background: var(--glass); border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); }
+.glass::before, .glass::after { content: ""; position: absolute; width: 12px; height: 12px; pointer-events: none; }
+.glass::before { top: 6px; left: 6px; border-top: 2px solid var(--hud); border-left: 2px solid var(--hud); }
+.glass::after { bottom: 6px; right: 6px; border-bottom: 2px solid var(--hud); border-right: 2px solid var(--hud); }
+
+/* Header bar */
+.top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px; padding: 14px 20px; }
+.brand svg { display: block; height: clamp(28px, 5vw, 38px); width: auto; }
+:root[data-theme="light"] .brand svg [stroke="#FFFFFF"] { stroke: #0E1B26; }
+.wordmark { font: 700 26px "Rajdhani", sans-serif; }
+.readout { display: flex; gap: 22px; justify-content: center; flex-wrap: wrap; }
+.readout div { display: flex; flex-direction: column; align-items: center; }
+.readout b { font: 600 18px "Rajdhani", sans-serif; letter-spacing: .06em; color: var(--ink); }
+.tools { display: flex; gap: 8px; align-items: center; }
+.tools a, .tools button { font: 500 11px "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink); text-decoration: none; background: transparent; border: 1px solid var(--line-strong);
+  padding: 6px 10px; cursor: pointer; }
+.tools a:hover, .tools button:hover { border-color: var(--hud); color: var(--hud); }
+
+/* Status readout */
+.summary { margin: 18px 2px 12px; display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; }
+.summary .label:first-child { color: var(--hud); }
+.sum { cursor: help; font: 500 12px "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .1em; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: var(--s-unknown); }
+.s-green.dot, .status.s-green::before { background: var(--s-green); box-shadow: var(--glow) var(--s-green); }
+.s-orange.dot, .status.s-orange::before { background: var(--s-orange); box-shadow: var(--glow) var(--s-orange); }
+.s-red.dot, .status.s-red::before { background: var(--s-red); box-shadow: var(--glow) var(--s-red); animation: pulse 1.4s infinite; }
+.s-parked.dot, .status.s-parked::before { background: var(--s-parked); }
+@keyframes pulse { 50% { opacity: .35; } }
+
+/* Tiles */
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.tile { appearance: none; -webkit-appearance: none; font: inherit; color: inherit; text-align: left; margin: 0; cursor: pointer; display: flex; flex-direction: column; gap: 8px;
+  padding: 18px 20px 16px 22px; min-height: 142px; transition: border-color .2s ease, background .2s ease; }
+.tile .bar { position: absolute; left: 0; top: 18px; bottom: 18px; width: 3px; background: var(--brand); box-shadow: var(--glow) var(--brand); }
+.tile:hover, .tile:focus-visible { border-color: var(--hud); background: var(--hud-soft); outline: none; }
+.tile .sweep { position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.08) 50%, transparent 70%); transform: translateX(-100%); }
+.tile:hover .sweep { opacity: 1; transform: translateX(100%); transition: transform .7s ease; }
+.tile-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.idx { font: 500 11px "JetBrains Mono", monospace; color: var(--hud); letter-spacing: .1em; }
+.name { font: 700 22px/1.1 "Rajdhani", sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.status { font: 500 10px "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .14em; color: var(--muted);
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--s-unknown); }
+.headline { font-size: 15px; line-height: 1.4; }
+.next { margin-top: auto; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); }
+.next::before { content: "NEXT ▸ "; color: var(--hud); letter-spacing: .1em; }
+
+/* Upcoming track */
+.track { margin-top: 22px; padding: 16px 20px; }
+.dates { list-style: none; padding: 0; margin: 10px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px 18px; border-top: 1px dashed var(--line-strong); }
+.dates li { position: relative; padding-top: 14px; font-size: 13px; color: var(--muted); }
+.dates li::before { content: ""; position: absolute; top: -4px; left: 0; width: 7px; height: 7px; background: var(--hud); transform: rotate(45deg); }
+.dates b { display: block; font: 600 14px "Rajdhani", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); }
+
+.foot { margin-top: 22px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; }
+.foot q { font: italic 400 13px "Space Grotesk", sans-serif; color: var(--muted); }
+
+/* Detail panel */
+.shade { position: fixed; inset: 0; z-index: 5; background: var(--shade); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+.panel { position: fixed; z-index: 6; top: 12px; right: 12px; bottom: 12px; width: min(560px, calc(100% - 24px));
+  background: var(--glass-strong); transform: translateX(110%); transition: transform .28s ease; display: flex; flex-direction: column; }
+body.open .shade { opacity: 1; pointer-events: auto; }
+body.open .panel { transform: none; }
+.panel-bar { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px 0 24px; }
+.close { all: unset; cursor: pointer; font: 500 11px "JetBrains Mono", monospace; letter-spacing: .14em; color: var(--muted);
+  border: 1px solid var(--line-strong); padding: 6px 10px; }
+.close:hover, .close:focus-visible { color: var(--hud); border-color: var(--hud); }
+.panel-body { overflow-y: auto; padding: 8px 28px 32px; }
+.detail header { border-left: 3px solid var(--brand); padding-left: 14px; margin: 10px 0 18px; }
+.detail h2 { font: 700 32px/1.05 "Rajdhani", sans-serif; letter-spacing: .05em; text-transform: uppercase; margin: 4px 0 8px; }
+.meta { margin: 0; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.intro p { margin: 0 0 6px; font-size: 14px; color: var(--muted); }
+.detail section { margin-top: 18px; }
+.detail h3 { display: flex; align-items: center; gap: 10px; font: 500 11px "JetBrains Mono", monospace; text-transform: uppercase;
+  letter-spacing: .16em; color: var(--hud); margin: 0 0 8px; }
+.detail h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.detail section.blocked { background: var(--blocked-bg); border-left: 2px solid var(--s-orange); padding: 10px 14px; }
+.detail section.blocked h3 { color: var(--s-orange); }
+.detail p { margin: 0; }
+ul { margin: 0; padding-left: 0; list-style: none; }
+li { margin: 6px 0; padding-left: 16px; position: relative; }
+.detail li::before { content: "›"; position: absolute; left: 0; color: var(--hud); }
+.empty { color: var(--muted); font-style: italic; }
+details { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 12px; }
+summary { cursor: pointer; font: 500 11px "JetBrains Mono", monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+summary:hover { color: var(--hud); }
+.src { margin-top: 22px; font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.src p { margin: 0 0 4px; }
+code { font: 12px "JetBrains Mono", monospace; overflow-wrap: anywhere; color: var(--muted); }
+a { color: var(--hud); }
+.links { display: flex; gap: 8px; flex-wrap: wrap; }
+.pillbtn { font: 500 11px "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
+  color: var(--ink); border: 1px solid var(--hud); padding: 7px 12px; }
+.pillbtn:hover { background: var(--hud-soft); }
+.tc { font: 500 10px "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--s-orange);
+  border: 1px solid currentColor; padding: 0 4px; white-space: nowrap; }
+
+/* Change requests */
+.notes { margin-top: 26px; }
+.note-list li { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between;
+  border: 1px solid var(--line); background: var(--glass); padding: 8px 10px; margin: 6px 0; }
+.note-list li::before { display: none; }
+.note-list small { display: block; font: 400 11px "JetBrains Mono", monospace; color: var(--muted); }
+.note-del { all: unset; cursor: pointer; color: var(--muted); font-size: 13px; padding: 0 4px; }
+.note-del:hover { color: var(--s-red); }
+.note-form { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.note-form textarea { font: 14px/1.4 "Space Grotesk", sans-serif; color: var(--ink); background: var(--glass);
+  border: 1px solid var(--line-strong); padding: 10px 12px; resize: vertical; }
+.note-form textarea:focus { outline: none; border-color: var(--hud); }
+.note-form button, #send-notes { align-self: flex-start; }
+.note-form button { font: 500 11px "JetBrains Mono", monospace; letter-spacing: .14em; text-transform: uppercase; cursor: pointer;
+  color: var(--ink); background: var(--hud-soft); border: 1px solid var(--hud); padding: 7px 14px; }
+#ncount { color: var(--hud); }
+#send-notes[data-empty] { opacity: .55; }
+.nbadge { font: 500 10px "JetBrains Mono", monospace; letter-spacing: .1em; color: var(--hud); border: 1px solid var(--hud); padding: 1px 6px; }
+.toast { position: fixed; z-index: 9; left: 50%; bottom: 22px; transform: translateX(-50%); max-width: calc(100% - 32px);
+  font: 500 12px "JetBrains Mono", monospace; color: var(--ink); background: var(--glass-strong); border: 1px solid var(--hud);
+  padding: 10px 14px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .readout { display: none; }
+  .top { grid-template-columns: auto auto; justify-content: space-between; } }
+@media (max-width: 560px) {
+  .wrap { padding: 14px 16px 40px; }
+  .grid { grid-template-columns: 1fr; }
+  .tile { min-height: 0; }
+  .panel { top: 0; right: 0; bottom: 0; width: 100%; }
+  .panel-body { padding: 8px 18px 28px; }
+}
+@media (prefers-reduced-motion: reduce) { .tile, .tile .sweep, .panel, .shade { transition: none; } .s-red { animation: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top glass">
+    <div class="brand"><svg xmlns="http://www.w3.org/2000/svg" viewBox="12 8 344 85" role="img" aria-label="Ludizm">
+  
+  <g fill="none" stroke-linecap="round" stroke-width="8.5">
+    <path d="M50 14 V38" stroke="#9BE36B"/>
+    <path d="M50 38 V87" stroke="#FFFFFF"/>
+    <path d="M18 38 H82" stroke="#FFFFFF"/>
+    <path d="M47 42 L21 71" stroke="#FFFFFF"/>
+    <path d="M53 42 L79 71" stroke="#FFFFFF"/>
+    <path d="M36 72 H64" stroke="#FFFFFF"/>
+  </g>
+  <g transform="translate(118 29) scale(0.21)" fill="none" stroke="#FFFFFF" stroke-width="40" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 0 V200 H115"/>
+    <path d="M195 0 V130 A65 65 0 0 0 325 130 V0"/>
+    <path d="M405 0 H455 A100 100 0 0 1 455 200 H405 Z"/>
+    <path d="M635 0 V200"/>
+    <path d="M715 0 H845 L715 200 H845"/>
+    <path d="M925 200 V0 L1005 125 L1085 0 V200"/>
+  </g>
+</svg>
+</div>
+    <div class="readout">
+      <div><span class="label">System</span><b>Ecosystem</b></div>
+      <div><span class="label">Local time</span><b id="clock">--:--</b></div>
+      <div><span class="label">Date</span><b id="date">10 OCT 2026</b></div>
+    </div>
+    <nav class="tools">
+      <a href="file:///Users/lude/Desktop/PNT%20-%20OYE/2_KIUB%20/KIUB%202026%20Taff/MEGA_DOC_2026_Taff%20Claude/00_KIUB_DASHBOARD.html">KIUB</a>
+      <a href="file:///Users/lude/Desktop/PNT%20-%20OYE/2_KIUB%20/KIUB%202026%20Taff/MEGA_DOC_2026_Taff%20Claude/KIUB_KNOWLEDGE_INDEX.html">Index</a>
+      <button type="button" id="send-notes" title="Save your change requests for Claude">Notes <span id="ncount">0</span></button>
+      <button type="button" id="theme" aria-label="Switch cockpit or daylight">◐</button>
+    </nav>
+  </header>
+
+  <p class="summary"><span class="label">// Status</span><span class="sum" title="Running well, nothing blocking"><span class="dot s-green"></span>2 green</span> · <span class="sum" title="Running, but something is blocked or waiting"><span class="dot s-orange"></span>3 orange</span> · <span class="sum" title="Paused on purpose, not worked on now"><span class="dot s-parked"></span>1 parked</span></p>
+  <main class="grid">
+<button class="tile glass" type="button" data-open="pnt" style="--brand:#0D7A72" aria-label="PNT: open details">
+  <span class="bar"></span><span class="sweep"></span>
+  <span class="tile-top"><span class="idx">01</span><span class="status s-orange" title="Running, but something is blocked or waiting">orange</span></span>
+  <span class="tile-top"><span class="name">PNT</span><span class="nbadge" data-badge="pnt" hidden></span></span>
+  <span class="headline">Ferajna and AMONDO workshops running</span>
+  <span class="next">Reports 2024 and 2025 by end of 2026</span>
+</button>
+<button class="tile glass" type="button" data-open="oye" style="--brand:#E74C3C" aria-label="OYE Prod: open details">
+  <span class="bar"></span><span class="sweep"></span>
+  <span class="tile-top"><span class="idx">02</span><span class="status s-green" title="Running well, nothing blocking">green</span></span>
+  <span class="tile-top"><span class="name">OYE Prod</span><span class="nbadge" data-badge="oye" hidden></span></span>
+  <span class="headline">PIH Malawi editing, site live with 18 films</span>
+  <span class="next">PIH delivery mid-October</span>
+</button>
+<button class="tile glass" type="button" data-open="oyai" style="--brand:#3498DB" aria-label="OYAI: open details">
+  <span class="bar"></span><span class="sweep"></span>
+  <span class="tile-top"><span class="idx">03</span><span class="status s-green" title="Running well, nothing blocking">green</span></span>
+  <span class="tile-top"><span class="name">OYAI</span><span class="nbadge" data-badge="oyai" hidden></span></span>
+  <span class="headline">Copy review, next article</span>
+  <span class="next">Booking slots open January 2027</span>
+</button>
+<button class="tile glass" type="button" data-open="saintlucia" style="--brand:#1ABC9C" aria-label="Saint Lucia: open details">
+  <span class="bar"></span><span class="sweep"></span>
+  <span class="tile-top"><span class="idx">04</span><span class="status s-orange" title="Running, but something is blocked or waiting">orange</span></span>
+  <span class="tile-top"><span class="name">Saint Lucia</span><span class="nbadge" data-badge="saintlucia" hidden></span></span>
+  <span class="headline">Forum 1 to 8 Nov: grant accepted, site live</span>
+  <span class="next">Departure 1 November</span>
+</button>
+<button class="tile glass" type="button" data-open="bravegens" style="--brand:#FF6B2C" aria-label="Brave Gens: open details">
+  <span class="bar"></span><span class="sweep"></span>
+  <span class="tile-top"><span class="idx">05</span><span class="status s-parked" title="Paused on purpose, not worked on now">parked</span></span>
+  <span class="tile-top"><span class="name">Brave Gens</span><span class="nbadge" data-badge="bravegens" hidden></span></span>
+  <span class="headline">Parked since March</span>
+  <span class="next">Straw hat: license or redesign first</span>
+</button>
+<button class="tile glass" type="button" data-open="kiub" style="--brand:#9B59E5" aria-label="KIUB: open details">
+  <span class="bar"></span><span class="sweep"></span>
+  <span class="tile-top"><span class="idx">06</span><span class="status s-orange" title="Running, but something is blocked or waiting">orange</span></span>
+  <span class="tile-top"><span class="name">KIUB</span><span class="nbadge" data-badge="kiub" hidden></span></span>
+  <span class="headline">Building, attorney consult next</span>
+  <span class="next">Testers November to January</span>
+</button></main>
+
+  <section class="track glass" aria-label="Upcoming">
+    <span class="label">// Upcoming</span>
+    <ul class="dates"><li><b>Mid-October</b>PIH Malawi delivery (OYE Prod)</li><li><b>October</b>KIUB attorney consult · OYAI copy review</li><li><b>1 to 8 November</b>SAINT LUCIA Forum</li><li><b>13 December</b>oyeprod.com domain expires (check auto-renew)</li><li><b>Mid-December</b>Ferajna + AMONDO cycle 1 end</li><li><b>End 2026</b>PNT reports 2024 and 2025</li></ul>
+  </section>
+
+  <footer class="foot">
+    <q>My job is a success when Yusuf, Daniel... understands that he and his friends can do great things.</q>
+    <span class="label">本 · 15 to check · 99 films (87 online) · built 10 October 2026, 17:42</span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="shade" data-close></div>
+<aside class="panel glass" role="dialog" aria-modal="true" aria-label="Project details" aria-hidden="true">
+  <div class="panel-bar"><span class="label">// Detail</span><button class="close" type="button" data-close aria-label="Close">Close ✕</button></div>
+  <div class="panel-body">
+<article class="detail" id="d-pnt" style="--brand:#0D7A72" hidden>
+  <header>
+    <p class="label">Po-Nad-To Foundation</p>
+    <h2>PNT</h2>
+    <p class="meta"><span class="status s-orange">orange</span> Updated 2026-10-10 · 5 to check</p>
+  </header>
+  <section><h3>Now</h3><ul><li>Workshops <strong>Ferajna</strong> (with Margarita Minkevich) started 9 October, run to mid-December.</li><li>Workshops <strong>AMONDO</strong> (with Margarita), Cycle 1 October to December. Visuals still to create (<span class="tc">to check</span>).</li><li>Both are forks of the Kino 2026 pipeline (Wix page + Tally form + Apps Script + regulamin + RODO).</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li>Canonical numbers: Lude&#x27;s choice needed (see the Ludizm logbook, &quot;Numbers to settle&quot;).</li></ul></section><section><h3>Next</h3><ul><li>File the <strong>2024 and 2025 activity reports</strong> before end of 2026 (accountant booked).</li><li>Fix <strong>one canonical set of numbers</strong> (years, countries, participants, projects) for every deck.</li><li>Build a one-page facts sheet (does not exist yet).</li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>Back catalogue of PNT workshop films, to be labelled (see <code>../FILM_INVENTORY.md</code>).</li><li>&quot;Liberté, égalité, fraternité&quot; (Saint-Denis) and &quot;One small flame is enough&quot; (<span class="tc">to check</span>: where the files are).</li><li>ponadto.foundation (Wix CMS): <strong>99 films, 87 published</strong> (checked 10 Oct 2026), 18 legal documents.</li></ul></section><section><h3>Leads and recruits</h3><ul><li><span class="tc">to check</span></li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Human KPI: <span class="tc">to check</span> (participant quotes from Ferajna / AMONDO)</li><li>Participants this season: <span class="tc">to check</span></li></ul></section></details>
+  <section class="notes">
+    <h3>Change requests</h3>
+    <ul class="note-list" data-for="pnt"></ul>
+    <form class="note-form" data-for="pnt" data-name="PNT">
+      <textarea rows="3" placeholder="What should change in the PNT file?" aria-label="Change request for PNT"></textarea>
+      <button type="submit">Add</button>
+    </form>
+  </section>
+  <div class="src"><p>Sources: memory <code>pnt-six-month-priorities-2026</code>, <code>CLAUDE ALL BACK UP/LUDIZM_PROJECTS INFO/</code> (logbook and 45-chat synthesis, 9 Oct 2026).</p></div>
+</article>
+<article class="detail" id="d-oye" style="--brand:#E74C3C" hidden>
+  <header>
+    <p class="label">Film studio + DIY tools</p>
+    <h2>OYE Prod</h2>
+    <p class="meta"><span class="status s-green">green</span> Updated 2026-10-10 · 1 to check</p>
+  </header>
+  <section><h3>Now</h3><ul><li><strong>PIH editing, First Cohort Intensive (Malawi):</strong> due mid-October. Translation, subtitles, proofreading. Paid work.</li><li><a href="https://oyeprod.com" target="_blank" rel="noopener">oyeprod.com</a> live on Vercel since 2 October (EN/PL, <strong>18 films</strong>: 17 + showreel, confirmed).</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li><strong>Second PIH cohort:</strong> dates, scope and fee not confirmed. Decides whether December and January need another income source.</li></ul></section><section><h3>Next</h3><ul><li>Film thumbnails by hand in Canva (Lude picks the screenshots).</li><li>Seven team bios still missing on the site.</li><li>Email letstalk@oyeprod.com: finish Zoho verification, then DKIM.</li><li>Check GoDaddy auto-renew: <strong>domain expires 2026-12-13</strong>.</li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>18 films on the site, front order: Igrzyska Wolności 2018 (the Liberté film), United CVE Poland, My OC, Chicas Unidas, PIH Nursing.</li><li>Full list: <code>../FILM_INVENTORY.md</code>.</li></ul></section><section><h3>Leads and recruits</h3><ul><li>PIH (Partners In Health): repeat client, cohort 2 pending.</li><li>DIY tools library (later): first tools planned are <strong>Creator</strong> and <strong>CLL (Camera Language)</strong>.</li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Films online: 18 (17 + showreel)</li><li>Site visits / film plays: <span class="tc">to check</span></li></ul></section></details>
+  <section class="notes">
+    <h3>Change requests</h3>
+    <ul class="note-list" data-for="oye"></ul>
+    <form class="note-form" data-for="oye" data-name="OYE Prod">
+      <textarea rows="3" placeholder="What should change in the OYE Prod file?" aria-label="Change request for OYE Prod"></textarea>
+      <button type="submit">Add</button>
+    </form>
+  </section>
+  <div class="src"><p>Sources: memory <code>oyeprod-site-hosting</code>, <code>5_ID/Site_OYEProd_2025-2026/OYE FILMS/Films_OYE_site.odt</code>.</p></div>
+</article>
+<article class="detail" id="d-oyai" style="--brand:#3498DB" hidden>
+  <header>
+    <p class="label">AI literacy trainings</p>
+    <h2>OYAI</h2>
+    <p class="meta"><span class="status s-green">green</span> Updated 2026-10-10 · 2 to check</p>
+  </header>
+  <section><h3>Now</h3><ul><li><a href="https://oyai.space" target="_blank" rel="noopener">oyai.space</a> live: new offer, three personas (NGO &amp; Institution, Starting from scratch, Student &amp; Educator -50%).</li><li>Every booking includes one session in Warsaw + two online follow-ups + a personal visual guide.</li><li>Lude reviews the homepage and blog page texts in &quot;Relecture OYAI&quot;.</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li><strong>No booking slots until January 2027</strong> (notice shown on the site).</li><li>Admin recurring slot creation probably broken (not fixed).</li><li>Blog weakly indexed by search engines.</li></ul></section><section><h3>Next</h3><ul><li>Choose and write the next article (prospects: <code>oyai-website/article-prospects/2026-10-04.md</code>).</li><li>One Polish LinkedIn carousel per published article.</li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>Article &quot;Au-delà de la peur et de la hype&quot; (FR/EN/PL, 2 Oct 2026).</li><li>First Polish LinkedIn carousel.</li><li>Pricing study.</li></ul></section><section><h3>Leads and recruits</h3><ul><li>NGO and institution quotes arrive by email (hello@oyai.space). Count: <span class="tc">to check</span></li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Articles published: 1</li><li>Bookings since new offer: <span class="tc">to check</span></li><li>Conversion target from OYE DIY tools: 7 to 10% (when tools exist)</li></ul></section></details>
+  <section class="notes">
+    <h3>Change requests</h3>
+    <ul class="note-list" data-for="oyai"></ul>
+    <form class="note-form" data-for="oyai" data-name="OYAI">
+      <textarea rows="3" placeholder="What should change in the OYAI file?" aria-label="Change request for OYAI"></textarea>
+      <button type="submit">Add</button>
+    </form>
+  </section>
+  <div class="src"><p>Source: <code>4_OYAI/BUILIDING OYAI/OYAI_CONTEXT_2026-10-08.md</code>.</p></div>
+</article>
+<article class="detail" id="d-saintlucia" style="--brand:#1ABC9C" hidden>
+  <header>
+    <p class="label">Forum 2026 + Cine Village</p>
+    <h2>Saint Lucia</h2>
+    <p class="meta"><span class="status s-orange">orange</span> Updated 2026-10-10 · 3 to check</p>
+  </header>
+  <div class="intro"><p>Forum + Cine Village, one project.</p><p><strong>Step 1 (now):</strong> Poland-Saint Lucia Film Partnership Forum, 1 to 8 November 2026, Castries and Soufrière.</p><p><strong>Goal (2028):</strong> a festival built from three bricks: <strong>Festival</strong> screenings (&quot;Eastern&quot; regions), <strong>Cine Village</strong> (one film made during the festival), <strong>Eastern Partnership</strong> (the network, starting with Poland meets Saint Lucia).</p></div><section><h3>Now</h3><ul><li>Website live: <strong><a href="https://polandsaintlucia.org" target="_blank" rel="noopener">polandsaintlucia.org</a></strong> (EN/PL, last deploy 9 October).</li><li>SALCC student pre-task sent; student process started week of 5 October.</li><li><strong>IAM NetWorks grant accepted</strong> (confirmed by Lude, 10 October).</li><li><strong>Flights WAW to UVF: IAM books and pays the tickets</strong>, not the delegation. Waiting for IAM (10 October). Lodging: <span class="tc">to check</span>.</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li><strong>Venue for 3, 5, 6 November: undecided by AVFA.</strong> Follow-up email drafted 2 Oct (<code>Info &amp; Docs/Drafts 10-2026/</code>).</li><li><strong>21 Sep meeting with Kendal John and Edison:</strong> outcome still not written (record &quot;TO FILL&quot;).</li><li>Letters of intent: renewal with November dates needed? Ask IAM now that the grant is accepted. <span class="tc">to check</span></li><li>Press release: still the February draft.</li><li>Cine Village funding: PISF deferred, not lost. The November trip produces the proof of relationship it lacked.</li></ul></section><section><h3>Next</h3><ul><li>Lock the conference schedule (draft v3, 28 Sep) and send it to AVFA.</li><li>Lock 3 to 5 online guests (names, subjects, 15 min slots), platform, moderators.</li><li>General meeting SALCC + AVFA + Malfinis + Polish side.</li><li>Rebuild a small IAM-only budget for the Polish side (lodging, meals, online guests, promo: all &quot;tbc&quot;).</li><li>Departure <strong>1 November</strong>. Masterclass <strong>Wed 4 Nov, 12:00 to 15:00, 12 students</strong>.</li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>Website <a href="https://polandsaintlucia.org" target="_blank" rel="noopener">polandsaintlucia.org</a>.</li><li>EN carousel (21 Sep) and PL carousel (18 Sep).</li><li>SALCC masterclass package; online speakers briefing (EN/PL).</li><li>Cine Village explainer videos (<code>3_CINE VILLAGE/CINE VILLAGE PROCESS 2026/COM/</code>).</li><li>Island photos (<code>Media/St Lucia Photos/Places/</code>).</li></ul></section><section><h3>Leads and recruits</h3><ul><li>AVFA: Darnel Kendal John (President), Edison (Malfinis).</li><li>SALCC: Tracy Pilgrim-George, Wayne Benti.</li><li>Delegation: Xawery Żuławski, Joanna Łopat, Lude Réno.</li><li>Online guests: co-production experts, festival curators, filmmakers. <span class="tc">to check</span> names.</li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>IAM NetWorks grant: 18,000 PLN (flights), <strong>accepted</strong>.</li><li>Students in masterclass: 12</li><li>Output of the week: the <strong>Festival Implementation List</strong> + a 2027-2028 roadmap signed by both sides.</li></ul></section><section><h3>Audience rules (which words go where)</h3><ul><li><strong>Polish and donor-facing:</strong> no PISF, no ECAFF, no festival edition, no Cine Village, no Po-Nad-To (Lude = educator and filmmaker). Say Eastern Europe, not Europe. Poland first.</li><li><strong>AVFA-facing / internal:</strong> the festival, Cine Village and the 2028 goal can be named. Saint Lucian talent first.</li><li>Always: a first-of-its-kind, two-way partnership. No &quot;colonial past&quot;, no &quot;model to repeat elsewhere&quot;.</li></ul></section></details>
+  <section class="notes">
+    <h3>Change requests</h3>
+    <ul class="note-list" data-for="saintlucia"></ul>
+    <form class="note-form" data-for="saintlucia" data-name="Saint Lucia">
+      <textarea rows="3" placeholder="What should change in the Saint Lucia file?" aria-label="Change request for Saint Lucia"></textarea>
+      <button type="submit">Add</button>
+    </form>
+  </section>
+  <div class="src"><p>Sources: <code>3_CINE VILLAGE Claude/01_ACTUAL PL-SLU FORUM 2026/</code> (Status Summary 28 Sep, Schedule v3 28 Sep, Drafts 10-2026, website deploy 9 Oct) and <code>3_CINE VILLAGE/</code>.</p></div>
+</article>
+<article class="detail" id="d-bravegens" style="--brand:#FF6B2C" hidden>
+  <header>
+    <p class="label">Merch + movement</p>
+    <h2>Brave Gens</h2>
+    <p class="meta"><span class="status s-parked">parked</span> Updated 2026-10-10 · 4 to check</p>
+  </header>
+  <div class="intro"><p>Sub-brand of the Po-Nad-To Foundation. Motto: &quot;Speak out. Even if you shake.&quot;</p><p>Workshop to movement: items earned in workshops, gifted at completion, sold in a Shopify boutique. Revenue funds more PNT programs.</p></div><section><h3>Now</h3><ul><li>Nothing active since March 2026 (last files: Presentation V1, 4 March).</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li><strong>The straw hat design:</strong> it is Luffy&#x27;s hat (One Piece). License it or redesign it <strong>before anything goes to print</strong>. Print-on-demand shops take down character art.</li><li>Shopify store: setup guide exists, store status <span class="tc">to check</span>.</li></ul></section><section><h3>Next</h3><ul><li><span class="tc">to check</span></li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>Brand presentation V1 and brand page (<code>TAFF BRAVE GENS/System Operations/</code>).</li><li>Manifesto, three symbols (frame, hat, type), mock-ups.</li></ul></section><section><h3>Leads and recruits</h3><ul><li>Distribution channels planned: PNT workshops, Shopify boutique, events and partner NGOs.</li><li>Oath Antique: luxury patron tier (see <code>1_MASTER_PLAN/Brave Oath/</code>). <span class="tc">to check</span></li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Items produced / sold: <span class="tc">to check</span></li></ul></section></details>
+  <section class="notes">
+    <h3>Change requests</h3>
+    <ul class="note-list" data-for="bravegens"></ul>
+    <form class="note-form" data-for="bravegens" data-name="Brave Gens">
+      <textarea rows="3" placeholder="What should change in the Brave Gens file?" aria-label="Change request for Brave Gens"></textarea>
+      <button type="submit">Add</button>
+    </form>
+  </section>
+  <div class="src"><p>Folder: <code>5_Brave Gens : Oath/</code>.</p></div>
+</article>
+<article class="detail" id="d-kiub" style="--brand:#9B59E5" hidden>
+  <header>
+    <p class="label">Summary only</p>
+    <h2>KIUB</h2>
+    <p class="meta"><span class="status s-orange">orange</span> Updated 2026-10-10</p>
+  </header>
+  <section><h3>Next milestone</h3><p>patent attorney consult (October), then recruit 30 to 50 alpha testers under NDA (November to January). Build until January 2027, testing from February, filing March to April 2027.</p></section><section class="blocked"><h3>Blocked by</h3><p>attorney consult (it gates the NDA, which gates tester recruitment). Filing entity still open: personal or foundation.</p></section><section><h3>Full detail</h3><p class="links"><a class="pillbtn" href="file:///Users/lude/Desktop/PNT%20-%20OYE/2_KIUB%20/KIUB%202026%20Taff/MEGA_DOC_2026_Taff%20Claude/00_KIUB_DASHBOARD.html">KIUB Dashboard</a><a class="pillbtn" href="file:///Users/lude/Desktop/PNT%20-%20OYE/2_KIUB%20/KIUB%202026%20Taff/MEGA_DOC_2026_Taff%20Claude/KIUB_KNOWLEDGE_INDEX.html">Knowledge index</a></p></section>
+  
+  <div class="src"><p>Rule: nothing about KIUB is published, posted or shared before the patent is filed. This file holds no technical detail.</p></div>
+</article></div>
+</aside>
+
+<script>
+(function () {
+  var root = document.documentElement, body = document.body, key = "ludizm-theme";
+  var panel = document.querySelector(".panel"), lastTile = null;
+  try { var saved = localStorage.getItem(key); if (saved) root.setAttribute("data-theme", saved); } catch (e) {}
+  document.getElementById("theme").addEventListener("click", function () {
+    var cur = root.getAttribute("data-theme") || "dark";
+    var next = cur === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem(key, next); } catch (e) {}
+  });
+
+  function show(id) {
+    var target = id && document.getElementById("d-" + id);
+    document.querySelectorAll(".detail").forEach(function (d) { d.hidden = d !== target; });
+    if (target) {
+      body.classList.add("open", "locked");
+      panel.setAttribute("aria-hidden", "false");
+      panel.querySelector(".panel-body").scrollTop = 0;
+      panel.querySelector(".close").focus();
+    } else {
+      body.classList.remove("open", "locked");
+      panel.setAttribute("aria-hidden", "true");
+      if (lastTile) lastTile.focus();
+    }
+  }
+  function route() { show(location.hash.replace("#", "")); }
+  function closeIt() {
+    try { history.pushState("", "", location.pathname); } catch (e) { location.hash = ""; }
+    show("");
+  }
+  document.querySelectorAll("[data-open]").forEach(function (t) {
+    t.addEventListener("click", function () { lastTile = t; location.hash = t.getAttribute("data-open"); });
+  });
+  document.querySelectorAll("[data-close]").forEach(function (c) {
+    c.addEventListener("click", closeIt);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && body.classList.contains("open")) closeIt();
+  });
+  // Change requests: kept in this browser until Claude applies them
+  var NK = "ludizm-notes", APPLIED = [];
+  function load() { try { return JSON.parse(localStorage.getItem(NK)) || []; } catch (e) { return []; } }
+  function store(list) { try { localStorage.setItem(NK, JSON.stringify(list)); } catch (e) {} }
+  var notes = load().filter(function (n) { return APPLIED.indexOf(n.id) < 0; });
+  store(notes);
+  function toast(msg) {
+    var t = document.getElementById("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast.t); toast.t = setTimeout(function () { t.hidden = true; }, 6000);
+  }
+  function render() {
+    document.querySelectorAll(".note-list").forEach(function (ul) {
+      var id = ul.getAttribute("data-for"); ul.textContent = "";
+      notes.filter(function (n) { return n.project === id; }).forEach(function (n) {
+        var li = document.createElement("li"), txt = document.createElement("span"), when = document.createElement("small"),
+            del = document.createElement("button");
+        txt.textContent = n.text; when.textContent = n.created.slice(0, 16).replace("T", " "); txt.appendChild(when);
+        del.className = "note-del"; del.type = "button"; del.textContent = "✕"; del.setAttribute("aria-label", "Delete this note");
+        del.addEventListener("click", function () { notes = notes.filter(function (x) { return x.id !== n.id; }); store(notes); render(); });
+        li.appendChild(txt); li.appendChild(del); ul.appendChild(li);
+      });
+    });
+    document.querySelectorAll("[data-badge]").forEach(function (b) {
+      var c = notes.filter(function (n) { return n.project === b.getAttribute("data-badge"); }).length;
+      b.hidden = !c; b.textContent = c + (c > 1 ? " NOTES" : " NOTE");
+    });
+    document.getElementById("ncount").textContent = notes.length;
+    var sb = document.getElementById("send-notes");
+    if (notes.length) sb.removeAttribute("data-empty"); else sb.setAttribute("data-empty", "");
+  }
+  document.querySelectorAll(".note-form").forEach(function (f) {
+    f.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var ta = f.querySelector("textarea"), text = ta.value.trim();
+      if (!text) return;
+      notes.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), project: f.getAttribute("data-for"),
+        name: f.getAttribute("data-name"), text: text, created: new Date().toISOString() });
+      store(notes); ta.value = ""; render();
+    });
+  });
+  document.getElementById("send-notes").addEventListener("click", function () {
+    if (!notes.length) { toast("No notes yet. Open a project and add a change request."); return; }
+    var day = new Date().toISOString().slice(0, 10), name = "ludizm_notes_" + day + ".json";
+    var blob = new Blob([JSON.stringify({ app: "ludizm", saved: new Date().toISOString(), notes: notes }, null, 2)], { type: "application/json" });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    toast("Saved " + name + " in Downloads. Tell Claude: apply Ludizm notes.");
+  });
+  render();
+
+  function tick() {
+    var d = new Date(), c = document.getElementById("clock"), t = document.getElementById("date");
+    if (c) c.textContent = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    if (t) t.textContent = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
+  }
+  tick(); setInterval(tick, 15000);
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+</body>
+</html>

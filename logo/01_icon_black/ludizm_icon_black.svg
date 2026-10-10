@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Ludizm">
+  <title>Ludizm</title>
+  <rect width="100" height="100" rx="22" fill="#000000"/>
+  <g fill="none" stroke-linecap="round" stroke-width="8.5">
+    <path d="M50 14 V38" stroke="#9BE36B"/>
+    <path d="M50 38 V87" stroke="#FFFFFF"/>
+    <path d="M18 38 H82" stroke="#FFFFFF"/>
+    <path d="M47 42 L21 71" stroke="#FFFFFF"/>
+    <path d="M53 42 L79 71" stroke="#FFFFFF"/>
+    <path d="M36 72 H64" stroke="#FFFFFF"/>
+  </g>
+</svg>
