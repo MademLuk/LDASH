@@ -46,7 +46,8 @@ ELEMENTS = [
     ("kiub", "KIUB_SUMMARY.md", "KIUB", "Summary only", "#9B59E5"),
 ]
 
-MAIN_SECTIONS = ["Now (this week)", "Blocked / waiting", "Next (this month)"]
+MAIN_SECTIONS = ["To do", "Now (this week)", "Blocked / waiting"]
+NOW_VISIBLE = 3  # longer "Now" lists fold the rest away
 MORE_SECTIONS = ["Content ready to show", "Leads and recruits", "Numbers (KPIs)"]
 FOOTER_PREFIXES = ("Sources:", "Source:", "Folder:", "Folders:", "Red lines:", "Rule:")
 FIELDS = ("Last update", "Status", "Headline", "Next date", "Next milestone", "Blocked by", "Full detail")
@@ -147,10 +148,42 @@ def list_html(items):
     return "<ul>" + "".join(f"<li>{inline(i)}</li>" for i in items) + "</ul>"
 
 
+def intro_html(d):
+    intro = "".join(f"<p>{inline(i)}</p>" for i in d["intro"])
+    return f'<div class="intro">{intro}</div>' if intro else ""
+
+
+def todo_items(d):
+    """'- [ ] task · owner · when' lines from the To do section."""
+    out = []
+    for raw in d["sections"].get("To do", []):
+        done = raw.lower().startswith("[x]")
+        text = raw[3:].strip() if raw[:3].lower() in ("[ ]", "[x]") else raw
+        parts = [x.strip() for x in text.split(" · ")]
+        out.append({"done": done, "task": parts[0], "meta": " · ".join(parts[1:])})
+    return out
+
+
+def todo_html(eid, items):
+    if not items:
+        return '<p class="empty">No tasks yet</p>'
+    lis = ""
+    for i, t in enumerate(items):
+        tid = f"{eid}-{i}"
+        checked = " checked disabled" if t["done"] else ""
+        meta = f'<small>{inline(t["meta"])}</small>' if t["meta"] else ""
+        lis += (f'<li class="todo{" done" if t["done"] else ""}"><label>'
+                f'<input type="checkbox" data-task="{tid}" data-project="{eid}" data-text="{html.escape(t["task"])}"{checked}>'
+                f'<span>{inline(t["task"])}{meta}</span></label></li>')
+    return f'<ul class="todos">{lis}</ul>'
+
+
 def tile(idx, eid, name, color, d):
     f = d["fields"]
     headline = f.get("Headline") or (d["sections"].get("Now (this week)") or [""])[0]
     nxt = f.get("Next date") or f.get("Next milestone", "")
+    open_n = sum(1 for t in todo_items(d) if not t["done"])
+    todo_badge = f'<span class="todo-n">{open_n} to do</span>' if open_n else ""
     return f"""
 <button class="tile glass" type="button" data-open="{eid}" style="--brand:{color}" aria-label="{name}: open details">
   <span class="bar"></span><span class="sweep"></span>
@@ -158,6 +191,7 @@ def tile(idx, eid, name, color, d):
   <span class="tile-top"><span class="name">{name}</span><span class="nbadge" data-badge="{eid}" hidden></span></span>
   <span class="headline">{plain(headline)}</span>
   <span class="next">{plain(nxt)}</span>
+  {todo_badge}
 </button>"""
 
 
@@ -165,8 +199,7 @@ def detail(eid, name, tagline, color, d):
     f = d["fields"]
     tc = d["to_check"]
     meta = f'Updated {html.escape(f.get("Last update", "?"))}' + (f' · {tc} to check' if tc else "")
-    intro = "".join(f"<p>{inline(i)}</p>" for i in d["intro"])
-    intro = f'<div class="intro">{intro}</div>' if intro else ""
+    intro = intro_html(d) if eid == "kiub" else ""
     if eid == "kiub":
         body = (
             f'<section><h3>Next milestone</h3><p>{inline(f.get("Next milestone", ""))}</p></section>'
@@ -177,22 +210,24 @@ def detail(eid, name, tagline, color, d):
         )
         more = ""
     else:
-        body = ""
-        for s in MAIN_SECTIONS:
-            items = d["sections"].get(s, [])
-            if s.startswith("Blocked") and not items:
-                continue
-            cls = ' class="blocked"' if s.startswith("Blocked") else ""
-            label = s.split(" (")[0]
-            body += f'<section{cls}><h3>{label}</h3>{list_html(items)}</section>'
+        body = f'<section class="todo-sec"><h3>To do</h3>{todo_html(eid, todo_items(d))}</section>'
+        now = d["sections"].get("Now (this week)", [])
+        rest = ""
+        if len(now) > NOW_VISIBLE:
+            rest = f'<details class="inline"><summary>{len(now) - NOW_VISIBLE} more</summary>{list_html(now[NOW_VISIBLE:])}</details>'
+        if now:
+            body += f'<section><h3>Now</h3>{list_html(now[:NOW_VISIBLE])}{rest}</section>'
+        blocked = d["sections"].get("Blocked / waiting", [])
+        if blocked:
+            body += f'<section class="blocked"><h3>Waiting</h3>{list_html(blocked)}</section>'
         extra = [s for s in d["sections"] if s not in MAIN_SECTIONS]
         ordered = [s for s in MORE_SECTIONS if s in extra] + [s for s in extra if s not in MORE_SECTIONS]
-        inner = "".join(f'<section><h3>{s}</h3>{list_html(d["sections"][s])}</section>' for s in ordered)
-        more = f'<details><summary>Content, leads, numbers</summary>{inner}</details>' if inner else ""
+        inner = intro_html(d) + "".join(f'<section><h3>{s}</h3>{list_html(d["sections"][s])}</section>' for s in ordered)
+        more = f'<details class="more"><summary>More: background, content, leads, numbers</summary>{inner}</details>' if inner else ""
     # KIUB has no change requests: its summary is refreshed by /eotd in the KIUB project
     notes = "" if eid == "kiub" else NOTES_BLOCK.format(eid=eid, name=name)
     footer = "".join(f'<p>{inline(x)}</p>' for x in d["footer"])
-    footer = f'<div class="src">{footer}</div>' if footer else ""
+    footer = f'<details class="src"><summary>Sources</summary>{footer}</details>' if footer else ""
     return f"""
 <article class="detail" id="d-{eid}" style="--brand:{color}" hidden>
   <header>
@@ -267,23 +302,23 @@ def build():
 <style>
 /* HUD theme: dark cockpit by default, "daylight" when switched to light */
 :root {{
-  --bg: #04070B; --bg2: #0A1420; --glass: rgba(140, 190, 230, .06); --glass-strong: rgba(10, 18, 28, .72);
+  --bg: #04070B; --bg2: #0A1420; --glass: rgba(140, 190, 230, .06); --glass-strong: rgba(9, 15, 22, .97);
   --line: rgba(160, 205, 240, .16); --line-strong: rgba(160, 205, 240, .32);
   --ink: #E6F1FA; --muted: #7F96AA; --hud: #FF6A13; --hud-soft: rgba(255, 106, 19, .14);
-  --grid: rgba(120, 180, 230, .05); --shade: rgba(0, 4, 8, .55); --blocked-bg: rgba(255, 106, 19, .08);
+  --grid: rgba(120, 180, 230, .05); --shade: rgba(0, 4, 8, .78); --blocked-bg: rgba(255, 106, 19, .08);
   --s-green: #39F5A0; --s-orange: #FFB020; --s-red: #FF4D4D; --s-parked: #7C8794; --s-unknown: #7C8794;
   --glow: 0 0 10px;
 }}
 :root[data-theme="light"] {{
-  --bg: #DCE6EE; --bg2: #F2F6F9; --glass: rgba(255, 255, 255, .55); --glass-strong: rgba(248, 251, 253, .82);
+  --bg: #DCE6EE; --bg2: #F2F6F9; --glass: rgba(255, 255, 255, .55); --glass-strong: rgba(250, 252, 254, .98);
   --line: rgba(20, 50, 80, .14); --line-strong: rgba(20, 50, 80, .3);
   --ink: #0E1B26; --muted: #4F6576; --hud: #E05500; --hud-soft: rgba(224, 85, 0, .1);
-  --grid: rgba(20, 60, 100, .06); --shade: rgba(20, 35, 50, .25); --blocked-bg: rgba(224, 85, 0, .07);
+  --grid: rgba(20, 60, 100, .06); --shade: rgba(20, 35, 50, .5); --blocked-bg: rgba(224, 85, 0, .07);
   --s-green: #129A5C; --s-orange: #D98200; --s-red: #D23030; --s-parked: #8794A0; --glow: 0 0 0;
 }}
 * {{ box-sizing: border-box; }}
 html, body {{ margin: 0; }}
-body {{ color: var(--ink); font: 15px/1.5 "Space Grotesk", system-ui, sans-serif; min-height: 100vh;
+body {{ color: var(--ink); font: 16px/1.6 "Space Grotesk", system-ui, sans-serif; min-height: 100vh;
   background:
     radial-gradient(1200px 600px at 80% -10%, rgba(52, 152, 219, .16), transparent 60%),
     radial-gradient(900px 500px at -10% 110%, rgba(255, 106, 19, .08), transparent 60%),
@@ -347,8 +382,10 @@ body.locked {{ overflow: hidden; }}
 .status {{ font: 500 10px "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .14em; color: var(--muted);
   display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }}
 .status::before {{ content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--s-unknown); }}
-.headline {{ font-size: 15px; line-height: 1.4; }}
-.next {{ margin-top: auto; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); }}
+.headline {{ font-size: 16px; line-height: 1.45; }}
+.todo-n {{ font: 500 12px "JetBrains Mono", monospace; letter-spacing: .06em; color: var(--ink);
+  border: 1px solid var(--line-strong); padding: 1px 8px; align-self: flex-start; }}
+.next {{ margin-top: auto; font: 400 13px "JetBrains Mono", monospace; color: var(--muted); }}
 .next::before {{ content: "NEXT ▸ "; color: var(--hud); letter-spacing: .1em; }}
 
 /* Upcoming track */
@@ -364,7 +401,7 @@ body.locked {{ overflow: hidden; }}
 
 /* Detail panel */
 .shade {{ position: fixed; inset: 0; z-index: 5; background: var(--shade); opacity: 0; pointer-events: none; transition: opacity .2s ease; }}
-.panel {{ position: fixed; z-index: 6; top: 12px; right: 12px; bottom: 12px; width: min(560px, calc(100% - 24px));
+.panel {{ position: fixed; z-index: 6; top: 12px; right: 12px; bottom: 12px; width: min(680px, calc(100% - 24px));
   background: var(--glass-strong); transform: translateX(110%); transition: transform .28s ease; display: flex; flex-direction: column; }}
 body.open .shade {{ opacity: 1; pointer-events: auto; }}
 body.open .panel {{ transform: none; }}
@@ -372,20 +409,20 @@ body.open .panel {{ transform: none; }}
 .close {{ all: unset; cursor: pointer; font: 500 11px "JetBrains Mono", monospace; letter-spacing: .14em; color: var(--muted);
   border: 1px solid var(--line-strong); padding: 6px 10px; }}
 .close:hover, .close:focus-visible {{ color: var(--hud); border-color: var(--hud); }}
-.panel-body {{ overflow-y: auto; padding: 8px 28px 32px; }}
+.panel-body {{ overflow-y: auto; padding: 8px 40px 40px; font-size: 17px; line-height: 1.65; }}
 .detail header {{ border-left: 3px solid var(--brand); padding-left: 14px; margin: 10px 0 18px; }}
 .detail h2 {{ font: 700 32px/1.05 "Rajdhani", sans-serif; letter-spacing: .05em; text-transform: uppercase; margin: 4px 0 8px; }}
 .meta {{ margin: 0; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }}
-.intro p {{ margin: 0 0 6px; font-size: 14px; color: var(--muted); }}
-.detail section {{ margin-top: 18px; }}
-.detail h3 {{ display: flex; align-items: center; gap: 10px; font: 500 11px "JetBrains Mono", monospace; text-transform: uppercase;
+.intro p {{ margin: 0 0 8px; font-size: 15px; color: var(--muted); }}
+.detail section {{ margin-top: 30px; }}
+.detail h3 {{ display: flex; align-items: center; gap: 10px; font: 600 15px "Rajdhani", sans-serif; text-transform: uppercase;
   letter-spacing: .16em; color: var(--hud); margin: 0 0 8px; }}
 .detail h3::after {{ content: ""; flex: 1; height: 1px; background: var(--line); }}
-.detail section.blocked {{ background: var(--blocked-bg); border-left: 2px solid var(--s-orange); padding: 10px 14px; }}
+.detail section.blocked {{ background: var(--blocked-bg); border-left: 2px solid var(--s-orange); padding: 14px 18px; }}
 .detail section.blocked h3 {{ color: var(--s-orange); }}
 .detail p {{ margin: 0; }}
 ul {{ margin: 0; padding-left: 0; list-style: none; }}
-li {{ margin: 6px 0; padding-left: 16px; position: relative; }}
+li {{ margin: 10px 0; padding-left: 18px; position: relative; }}
 .detail li::before {{ content: "›"; position: absolute; left: 0; color: var(--hud); }}
 .empty {{ color: var(--muted); font-style: italic; }}
 details {{ margin-top: 22px; border-top: 1px solid var(--line); padding-top: 12px; }}
@@ -423,6 +460,22 @@ a {{ color: var(--hud); }}
 .toast {{ position: fixed; z-index: 9; left: 50%; bottom: 22px; transform: translateX(-50%); max-width: calc(100% - 32px);
   font: 500 12px "JetBrains Mono", monospace; color: var(--ink); background: var(--glass-strong); border: 1px solid var(--hud);
   padding: 10px 14px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }}
+
+/* To do checklist */
+.todos li {{ padding-left: 0; margin: 4px 0; }}
+.todos li::before {{ display: none; }}
+.todos label {{ display: flex; gap: 14px; align-items: flex-start; cursor: pointer; padding: 10px 12px;
+  border: 1px solid var(--line); background: var(--glass); }}
+.todos label:hover {{ border-color: var(--hud); }}
+.todos input {{ appearance: none; -webkit-appearance: none; flex: none; width: 20px; height: 20px; margin: 3px 0 0;
+  border: 2px solid var(--hud); background: transparent; cursor: pointer; display: grid; place-items: center; }}
+.todos input:checked {{ background: var(--hud); }}
+.todos input:checked::after {{ content: "✓"; color: #000; font-size: 14px; font-weight: 700; }}
+.todos small {{ display: block; font: 400 13px "JetBrains Mono", monospace; color: var(--muted); margin-top: 2px; }}
+.todos li.done span, .todos li.ticked span {{ text-decoration: line-through; opacity: .55; }}
+details.inline {{ margin: 4px 0 0; border: 0; padding: 0; }}
+details.more {{ margin-top: 34px; }}
+details.src {{ border: 0; padding: 0; margin-top: 18px; }}
 
 @media (max-width: 900px) {{ .grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }} .readout {{ display: none; }}
   .top {{ grid-template-columns: auto auto; justify-content: space-between; }} }}
@@ -541,9 +594,23 @@ a {{ color: var(--hud); }}
       b.hidden = !c; b.textContent = c + (c > 1 ? " NOTES" : " NOTE");
     }});
     document.getElementById("ncount").textContent = notes.length;
+    document.querySelectorAll("input[data-task]:not([disabled])").forEach(function (cb) {{
+      var on = notes.some(function (n) {{ return n.task === cb.getAttribute("data-task"); }});
+      cb.checked = on; cb.closest("li").classList.toggle("ticked", on);
+    }});
     var sb = document.getElementById("send-notes");
     if (notes.length) sb.removeAttribute("data-empty"); else sb.setAttribute("data-empty", "");
   }}
+  document.querySelectorAll("input[data-task]:not([disabled])").forEach(function (cb) {{
+    cb.addEventListener("change", function () {{
+      var tid = cb.getAttribute("data-task");
+      notes = notes.filter(function (n) {{ return n.task !== tid; }});
+      if (cb.checked) notes.push({{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), task: tid,
+        project: cb.getAttribute("data-project"), name: cb.getAttribute("data-project"),
+        text: "Done: " + cb.getAttribute("data-text"), created: new Date().toISOString() }});
+      store(notes); render();
+    }});
+  }});
   document.querySelectorAll(".note-form").forEach(function (f) {{
     f.addEventListener("submit", function (e) {{
       e.preventDefault();

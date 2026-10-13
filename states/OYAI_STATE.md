@@ -9,9 +9,12 @@ Next date: Booking slots open January 2027
 - Every booking includes one session in Warsaw + two online follow-ups + a personal visual guide.
 - Lude reviews the homepage and blog page texts in "Relecture OYAI".
 
-## Next (this month)
-- Choose and write the next article (prospects: `oyai-website/article-prospects/2026-10-04.md`).
-- One Polish LinkedIn carousel per published article.
+## To do
+- [ ] Review the homepage and blog texts in Relecture OYAI · Lude · this week
+- [ ] Choose the next article · Lude · October
+- [ ] Polish LinkedIn carousel for each new article · Claude · after each article
+- [ ] Fix the admin recurring slots · Claude · before January
+- [ ] Open booking slots for January 2027 · Lude · December
 
 ## Blocked / waiting
 - **No booking slots until January 2027** (notice shown on the site).

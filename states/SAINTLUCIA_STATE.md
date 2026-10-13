@@ -9,23 +9,27 @@ Headline: Team to-do shared; conference 10:00 to 15:00; site updated with the Sa
 Next date: Departure 1 November
 
 ## Now (this week)
-- **First full team meeting on 12 October** (Lude, Milton, Kendal, Tracy). Summary and a 17-task to-do in the shared Drive doc "TODO LIST & Meeting Notes" (first tab).
-- **Conference days 3, 5, 6 Nov run 10:00 to 15:00** (school traffic, school pick-up). Agenda draft v5 on Drive.
-- **Website updated and live (13 Oct):** Kendal, Milton and Tracy on site, Laura Larifla as online guest, new hours. Polish bios: native check TO CHECK.
-- Shared docs on Drive: to-do, agenda v5, "People and roles" (new 13 Oct). Notion sprint ST-LUCIA updated.
-- Invitations: Milton drafted letters (Ministry of Finance, Export Saint Lucia, SLCSI, studios). Ministry of Education letter to write. SALCC sends 2 representatives on 5 and 6 Nov.
+- **Team meeting 12 Oct** (Lude, Milton, Kendal, Tracy): 17-task shared to-do on Drive.
+- **Conference days 3, 5, 6 Nov:** 10:00 to 15:00.
+- **Website updated (13 Oct)** with the Saint Lucian team and the new hours.
+- Invitation letters drafted by Milton. SALCC sends 2 representatives on 5 and 6 Nov.
 
-## Next (this month)
-- Team fills the [TO FILL] dates in the shared to-do.
-- Fill the online guest slots in the Drive doc "Online speakers · Update 13 Oct" and send it with the updated briefing PDFs (new hours, 13 Oct) to each guest.
-- Catering for 5 and 6 Nov (Milton, Kendal). Press conference time on 4 Nov and a pre-arrival interview (Kendal, Lude).
-- Small IAM-only budget. Press release for November.
-- Departure **1 November**. Masterclass **Wed 4 Nov, 12:00 to 15:00, 12 students**.
+## To do
+- [ ] Fill the dates in the shared team to-do · Team · this week
+- [ ] Get the HRDC Gros Islet venue answer in writing · Milton · this week
+- [ ] Fill the online guest slots and send the updated briefings · Lude · October
+- [ ] Ask IAM: flight booking, letters of intent renewal · Lude · October
+- [ ] Catering for 5 and 6 Nov · Milton + Kendal · October
+- [ ] Press conference time (4 Nov) and pre-arrival interview · Kendal + Lude · October
+- [ ] Small IAM-only budget and the November press release · Lude · October
+- [ ] Ministry of Education letter, native check of the Polish bios · Lude · October
 
 ## Blocked / waiting
 - **Venue: HRDC Gros Islet agreed in principle.** Written answer to Milton's 8 Oct letter still pending.
 - **Flights: IAM books and pays.** Waiting for IAM. Lodging: TO CHECK.
 - Letters of intent: renewal with November dates needed? TO CHECK with IAM.
+
+## Archived
 - Old Forum / Cine Village website builds (Feb and Sep 2026) archived on 13 October: `3_CINE VILLAGE Claude/00_ALL ARCHIVE/Old Forum - Cine Village website builds (archived 2026-10-13)`. Live site source unchanged.
 - PISF: archived on 13 October (Lude). Files in `3_CINE VILLAGE/Archives/PISF (archived 2026-10-13)` and Drive `ARCHIVE COM+DISK 2026/PISF (archived 2026-10-13)`.
 

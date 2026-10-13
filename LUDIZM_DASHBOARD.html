@@ -10,23 +10,23 @@
 <style>
 /* HUD theme: dark cockpit by default, "daylight" when switched to light */
 :root {
-  --bg: #04070B; --bg2: #0A1420; --glass: rgba(140, 190, 230, .06); --glass-strong: rgba(10, 18, 28, .72);
+  --bg: #04070B; --bg2: #0A1420; --glass: rgba(140, 190, 230, .06); --glass-strong: rgba(9, 15, 22, .97);
   --line: rgba(160, 205, 240, .16); --line-strong: rgba(160, 205, 240, .32);
   --ink: #E6F1FA; --muted: #7F96AA; --hud: #FF6A13; --hud-soft: rgba(255, 106, 19, .14);
-  --grid: rgba(120, 180, 230, .05); --shade: rgba(0, 4, 8, .55); --blocked-bg: rgba(255, 106, 19, .08);
+  --grid: rgba(120, 180, 230, .05); --shade: rgba(0, 4, 8, .78); --blocked-bg: rgba(255, 106, 19, .08);
   --s-green: #39F5A0; --s-orange: #FFB020; --s-red: #FF4D4D; --s-parked: #7C8794; --s-unknown: #7C8794;
   --glow: 0 0 10px;
 }
 :root[data-theme="light"] {
-  --bg: #DCE6EE; --bg2: #F2F6F9; --glass: rgba(255, 255, 255, .55); --glass-strong: rgba(248, 251, 253, .82);
+  --bg: #DCE6EE; --bg2: #F2F6F9; --glass: rgba(255, 255, 255, .55); --glass-strong: rgba(250, 252, 254, .98);
   --line: rgba(20, 50, 80, .14); --line-strong: rgba(20, 50, 80, .3);
   --ink: #0E1B26; --muted: #4F6576; --hud: #E05500; --hud-soft: rgba(224, 85, 0, .1);
-  --grid: rgba(20, 60, 100, .06); --shade: rgba(20, 35, 50, .25); --blocked-bg: rgba(224, 85, 0, .07);
+  --grid: rgba(20, 60, 100, .06); --shade: rgba(20, 35, 50, .5); --blocked-bg: rgba(224, 85, 0, .07);
   --s-green: #129A5C; --s-orange: #D98200; --s-red: #D23030; --s-parked: #8794A0; --glow: 0 0 0;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-body { color: var(--ink); font: 15px/1.5 "Space Grotesk", system-ui, sans-serif; min-height: 100vh;
+body { color: var(--ink); font: 16px/1.6 "Space Grotesk", system-ui, sans-serif; min-height: 100vh;
   background:
     radial-gradient(1200px 600px at 80% -10%, rgba(52, 152, 219, .16), transparent 60%),
     radial-gradient(900px 500px at -10% 110%, rgba(255, 106, 19, .08), transparent 60%),
@@ -90,8 +90,10 @@ body.locked { overflow: hidden; }
 .status { font: 500 10px "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .14em; color: var(--muted);
   display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
 .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--s-unknown); }
-.headline { font-size: 15px; line-height: 1.4; }
-.next { margin-top: auto; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); }
+.headline { font-size: 16px; line-height: 1.45; }
+.todo-n { font: 500 12px "JetBrains Mono", monospace; letter-spacing: .06em; color: var(--ink);
+  border: 1px solid var(--line-strong); padding: 1px 8px; align-self: flex-start; }
+.next { margin-top: auto; font: 400 13px "JetBrains Mono", monospace; color: var(--muted); }
 .next::before { content: "NEXT ▸ "; color: var(--hud); letter-spacing: .1em; }
 
 /* Upcoming track */
@@ -107,7 +109,7 @@ body.locked { overflow: hidden; }
 
 /* Detail panel */
 .shade { position: fixed; inset: 0; z-index: 5; background: var(--shade); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
-.panel { position: fixed; z-index: 6; top: 12px; right: 12px; bottom: 12px; width: min(560px, calc(100% - 24px));
+.panel { position: fixed; z-index: 6; top: 12px; right: 12px; bottom: 12px; width: min(680px, calc(100% - 24px));
   background: var(--glass-strong); transform: translateX(110%); transition: transform .28s ease; display: flex; flex-direction: column; }
 body.open .shade { opacity: 1; pointer-events: auto; }
 body.open .panel { transform: none; }
@@ -115,20 +117,20 @@ body.open .panel { transform: none; }
 .close { all: unset; cursor: pointer; font: 500 11px "JetBrains Mono", monospace; letter-spacing: .14em; color: var(--muted);
   border: 1px solid var(--line-strong); padding: 6px 10px; }
 .close:hover, .close:focus-visible { color: var(--hud); border-color: var(--hud); }
-.panel-body { overflow-y: auto; padding: 8px 28px 32px; }
+.panel-body { overflow-y: auto; padding: 8px 40px 40px; font-size: 17px; line-height: 1.65; }
 .detail header { border-left: 3px solid var(--brand); padding-left: 14px; margin: 10px 0 18px; }
 .detail h2 { font: 700 32px/1.05 "Rajdhani", sans-serif; letter-spacing: .05em; text-transform: uppercase; margin: 4px 0 8px; }
 .meta { margin: 0; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.intro p { margin: 0 0 6px; font-size: 14px; color: var(--muted); }
-.detail section { margin-top: 18px; }
-.detail h3 { display: flex; align-items: center; gap: 10px; font: 500 11px "JetBrains Mono", monospace; text-transform: uppercase;
+.intro p { margin: 0 0 8px; font-size: 15px; color: var(--muted); }
+.detail section { margin-top: 30px; }
+.detail h3 { display: flex; align-items: center; gap: 10px; font: 600 15px "Rajdhani", sans-serif; text-transform: uppercase;
   letter-spacing: .16em; color: var(--hud); margin: 0 0 8px; }
 .detail h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-.detail section.blocked { background: var(--blocked-bg); border-left: 2px solid var(--s-orange); padding: 10px 14px; }
+.detail section.blocked { background: var(--blocked-bg); border-left: 2px solid var(--s-orange); padding: 14px 18px; }
 .detail section.blocked h3 { color: var(--s-orange); }
 .detail p { margin: 0; }
 ul { margin: 0; padding-left: 0; list-style: none; }
-li { margin: 6px 0; padding-left: 16px; position: relative; }
+li { margin: 10px 0; padding-left: 18px; position: relative; }
 .detail li::before { content: "›"; position: absolute; left: 0; color: var(--hud); }
 .empty { color: var(--muted); font-style: italic; }
 details { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 12px; }
@@ -166,6 +168,22 @@ a { color: var(--hud); }
 .toast { position: fixed; z-index: 9; left: 50%; bottom: 22px; transform: translateX(-50%); max-width: calc(100% - 32px);
   font: 500 12px "JetBrains Mono", monospace; color: var(--ink); background: var(--glass-strong); border: 1px solid var(--hud);
   padding: 10px 14px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+
+/* To do checklist */
+.todos li { padding-left: 0; margin: 4px 0; }
+.todos li::before { display: none; }
+.todos label { display: flex; gap: 14px; align-items: flex-start; cursor: pointer; padding: 10px 12px;
+  border: 1px solid var(--line); background: var(--glass); }
+.todos label:hover { border-color: var(--hud); }
+.todos input { appearance: none; -webkit-appearance: none; flex: none; width: 20px; height: 20px; margin: 3px 0 0;
+  border: 2px solid var(--hud); background: transparent; cursor: pointer; display: grid; place-items: center; }
+.todos input:checked { background: var(--hud); }
+.todos input:checked::after { content: "✓"; color: #000; font-size: 14px; font-weight: 700; }
+.todos small { display: block; font: 400 13px "JetBrains Mono", monospace; color: var(--muted); margin-top: 2px; }
+.todos li.done span, .todos li.ticked span { text-decoration: line-through; opacity: .55; }
+details.inline { margin: 4px 0 0; border: 0; padding: 0; }
+details.more { margin-top: 34px; }
+details.src { border: 0; padding: 0; margin-top: 18px; }
 
 @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .readout { display: none; }
   .top { grid-template-columns: auto auto; justify-content: space-between; } }
@@ -223,6 +241,7 @@ a { color: var(--hud); }
   <span class="tile-top"><span class="name">PNT</span><span class="nbadge" data-badge="pnt" hidden></span></span>
   <span class="headline">New site in 6 languages with a text editor, waiting for Lude&#x27;s review</span>
   <span class="next">Lude tries the editing page, then review and launch (October)</span>
+  <span class="todo-n">7 to do</span>
 </button>
 <button class="tile glass" type="button" data-open="oye" style="--brand:#E74C3C" aria-label="OYE Prod: open details">
   <span class="bar"></span><span class="sweep"></span>
@@ -230,6 +249,7 @@ a { color: var(--hud); }
   <span class="tile-top"><span class="name">OYE Prod</span><span class="nbadge" data-badge="oye" hidden></span></span>
   <span class="headline">PIH Malawi editing, site live with 18 films</span>
   <span class="next">PIH delivery mid-October</span>
+  <span class="todo-n">6 to do</span>
 </button>
 <button class="tile glass" type="button" data-open="oyai" style="--brand:#3498DB" aria-label="OYAI: open details">
   <span class="bar"></span><span class="sweep"></span>
@@ -237,6 +257,7 @@ a { color: var(--hud); }
   <span class="tile-top"><span class="name">OYAI</span><span class="nbadge" data-badge="oyai" hidden></span></span>
   <span class="headline">Copy review, next article</span>
   <span class="next">Booking slots open January 2027</span>
+  <span class="todo-n">5 to do</span>
 </button>
 <button class="tile glass" type="button" data-open="saintlucia" style="--brand:#1ABC9C" aria-label="Saint Lucia: open details">
   <span class="bar"></span><span class="sweep"></span>
@@ -244,6 +265,7 @@ a { color: var(--hud); }
   <span class="tile-top"><span class="name">Saint Lucia</span><span class="nbadge" data-badge="saintlucia" hidden></span></span>
   <span class="headline">Team to-do shared; conference 10:00 to 15:00; site updated with the Saint Lucian team</span>
   <span class="next">Departure 1 November</span>
+  <span class="todo-n">8 to do</span>
 </button>
 <button class="tile glass" type="button" data-open="bravegens" style="--brand:#FF6B2C" aria-label="Brave Gens: open details">
   <span class="bar"></span><span class="sweep"></span>
@@ -251,6 +273,7 @@ a { color: var(--hud); }
   <span class="tile-top"><span class="name">Brave Gens</span><span class="nbadge" data-badge="bravegens" hidden></span></span>
   <span class="headline">Parked since March</span>
   <span class="next">Straw hat: license or redesign first</span>
+  <span class="todo-n">3 to do</span>
 </button>
 <button class="tile glass" type="button" data-open="kiub" style="--brand:#9B59E5" aria-label="KIUB: open details">
   <span class="bar"></span><span class="sweep"></span>
@@ -258,6 +281,7 @@ a { color: var(--hud); }
   <span class="tile-top"><span class="name">KIUB</span><span class="nbadge" data-badge="kiub" hidden></span></span>
   <span class="headline">Building, attorney consult next</span>
   <span class="next">Testers November to January</span>
+  
 </button></main>
 
   <section class="track glass" aria-label="Upcoming">
@@ -267,7 +291,7 @@ a { color: var(--hud); }
 
   <footer class="foot">
     <q>My job is a success when Yusuf, Daniel... understands that he and his friends can do great things.</q>
-    <span class="label">本 · 19 to check · 99 films (87 online) · built 13 October 2026, 11:14</span>
+    <span class="label">本 · 19 to check · 99 films (87 online) · built 13 October 2026, 11:32</span>
   </footer>
 </div>
 
@@ -280,9 +304,9 @@ a { color: var(--hud); }
   <header>
     <p class="label">Po-Nad-To Foundation</p>
     <h2>PNT</h2>
-    <p class="meta"><span class="status s-orange">orange</span> Updated 2026-10-13 · 8 to check</p>
+    <p class="meta"><span class="status s-orange">orange</span> Updated 2026-10-13 · 6 to check</p>
   </header>
-  <section><h3>Now</h3><ul><li><strong>New ponadto.foundation site built on 11 October</strong> to leave Wix: static site, 96 films from Notion with Camelia&#x27;s thumbnails, accessibility menu, demo film on YouTube, partners strip. Runs locally, not online yet. Context: <code>1_PNT_OYE /5_ID/Site_PNT_2025-2026/[EOTD_2026-10-11]_PNTSITE_CONTEXT.md</code> (session log up to 13 Oct).</li><li><strong>12 to 13 October:</strong> five language versions (PL, FR, ES, KA, UK) with a switcher; an editing page for the site texts (French as base); hero animation removed. AI search study and an AI visibility toolkit (identity sentence in EN/PL/FR) written on 13 Oct: <code>Site_PNT_2025-2026/AI_VISIBILITY_TOOLKIT_2026-10-13.md</code>.</li><li>Workshops <strong>Ferajna</strong> (with Margarita Minkevich) started 9 October, run to mid-December.</li><li>Workshops <strong>AMONDO</strong> (with Margarita), Cycle 1 October to December. Visuals still to create (<span class="tc">to check</span>).</li><li>Both are forks of the Kino 2026 pipeline (Wix page + Tally form + Apps Script + regulamin + RODO).</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li>Website launch: Lude&#x27;s test of the editing page, design references, review and go-ahead.</li><li>YouTube thumbnail uploads: Claude in Chrome not connected, or Lude by hand.</li><li>Canonical numbers: Lude&#x27;s choice needed (see the Ludizm logbook, &quot;Numbers to settle&quot;).</li></ul></section><section><h3>Next</h3><ul><li>Website: Lude tries the editing page on one sentence and sends design references (3 to 5 sites liked, 1 or 2 disliked). Then review, deploy to Vercel, point the domain, cancel Wix. Before launch: form endpoint, donation method, reports PDFs, missing partner logos, native check of the translations (<span class="tc">to check</span>).</li><li>18 film thumbnails to set on the YouTube channel (files ready in <code>Site_PNT_2025-2026/yt-thumbs/</code>).</li><li>File the <strong>2024 and 2025 activity reports</strong> before end of 2026 (accountant booked).</li><li>Fix <strong>one canonical set of numbers</strong> (years, countries, participants, projects) for every deck and for the site&#x27;s facts row (<span class="tc">to check</span>: the site shows the Wix numbers for now).</li><li>Build a one-page facts sheet (does not exist yet).</li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>New site preview (local, &quot;pnt-site&quot; server in the Claude app): demo film, 20-film selection, 96 films in all.</li><li>Demo film on YouTube: <a href="https://www.youtube.com/watch?v=fvZTrCbsXSw" target="_blank" rel="noopener">https://www.youtube.com/watch?v=fvZTrCbsXSw</a> (PNT DEMO V7 OP, 2 min 9 s).</li><li>Back catalogue of PNT workshop films, to be labelled (see <code>../FILM_INVENTORY.md</code>).</li><li>&quot;Liberté, égalité, fraternité&quot; (Saint-Denis) and &quot;One small flame is enough&quot; (<span class="tc">to check</span>: where the files are).</li><li>ponadto.foundation (Wix CMS): <strong>99 films, 87 published</strong> (checked 10 Oct 2026), 18 legal documents. The new site lists 96 published films from Notion; the counts stay from Wix until the switch (<span class="tc">to check</span> after launch).</li></ul></section><section><h3>Leads and recruits</h3><ul><li><span class="tc">to check</span></li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Human KPI: <span class="tc">to check</span> (participant quotes from Ferajna / AMONDO)</li><li>Participants this season: <span class="tc">to check</span></li></ul></section></details>
+  <section class="todo-sec"><h3>To do</h3><ul class="todos"><li class="todo"><label><input type="checkbox" data-task="pnt-0" data-project="pnt" data-text="Try the site editing page on one sentence"><span>Try the site editing page on one sentence<small>Lude · this week</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="pnt-1" data-project="pnt" data-text="Send design references: 3 to 5 sites liked, 1 or 2 disliked"><span>Send design references: 3 to 5 sites liked, 1 or 2 disliked<small>Lude · this week</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="pnt-2" data-project="pnt" data-text="Review the new site, then launch: Vercel, domain, cancel Wix"><span>Review the new site, then launch: Vercel, domain, cancel Wix<small>Lude + Claude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="pnt-3" data-project="pnt" data-text="Before launch: form, donations, report PDFs, partner logos, native check of translations"><span>Before launch: form, donations, report PDFs, partner logos, native check of translations<small>Claude + Lude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="pnt-4" data-project="pnt" data-text="Set the 18 film thumbnails on YouTube"><span>Set the 18 film thumbnails on YouTube<small>Lude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="pnt-5" data-project="pnt" data-text="Choose the canonical numbers (years, countries, participants, projects) and a one-page facts sheet"><span>Choose the canonical numbers (years, countries, participants, projects) and a one-page facts sheet<small>Lude · <span class="tc">to check</span></small></span></label></li><li class="todo"><label><input type="checkbox" data-task="pnt-6" data-project="pnt" data-text="File the 2024 and 2025 activity reports"><span>File the 2024 and 2025 activity reports<small>Lude + accountant · end of 2026</small></span></label></li></ul></section><section><h3>Now</h3><ul><li><strong>New ponadto.foundation site</strong> built (11 Oct): 96 films, accessibility menu, demo film. Not online yet.</li><li><strong>6 languages</strong> and a text-editing page added (12 to 13 Oct). AI visibility toolkit written.</li><li>Workshops <strong>Ferajna</strong> (with Margarita Minkevich): 9 Oct to mid-December.</li></ul><details class="inline"><summary>1 more</summary><ul><li>Workshops <strong>AMONDO</strong> (with Margarita): cycle 1, October to December.</li></ul></details></section><section class="blocked"><h3>Waiting</h3><ul><li>Website launch: Lude&#x27;s test of the editing page, design references, review and go-ahead.</li><li>YouTube thumbnail uploads: Claude in Chrome not connected, or Lude by hand.</li><li>Canonical numbers: Lude&#x27;s choice needed (see the Ludizm logbook, &quot;Numbers to settle&quot;).</li></ul></section><details class="more"><summary>More: background, content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>New site preview (local, &quot;pnt-site&quot; server in the Claude app): demo film, 20-film selection, 96 films in all.</li><li>Demo film on YouTube: <a href="https://www.youtube.com/watch?v=fvZTrCbsXSw" target="_blank" rel="noopener">https://www.youtube.com/watch?v=fvZTrCbsXSw</a> (PNT DEMO V7 OP, 2 min 9 s).</li><li>Back catalogue of PNT workshop films, to be labelled (see <code>../FILM_INVENTORY.md</code>).</li><li>&quot;Liberté, égalité, fraternité&quot; (Saint-Denis) and &quot;One small flame is enough&quot; (<span class="tc">to check</span>: where the files are).</li><li>ponadto.foundation (Wix CMS): <strong>99 films, 87 published</strong> (checked 10 Oct 2026), 18 legal documents. The new site lists 96 published films from Notion; the counts stay from Wix until the switch (<span class="tc">to check</span> after launch).</li></ul></section><section><h3>Leads and recruits</h3><ul><li><span class="tc">to check</span></li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Human KPI: <span class="tc">to check</span> (participant quotes from Ferajna / AMONDO)</li><li>Participants this season: <span class="tc">to check</span></li></ul></section></details>
   <section class="notes">
     <h3>Change requests</h3>
     <ul class="note-list" data-for="pnt"></ul>
@@ -291,15 +315,15 @@ a { color: var(--hud); }
       <button type="submit">Add</button>
     </form>
   </section>
-  <div class="src"><p>Sources: memory <code>pnt-six-month-priorities-2026</code>, <code>CLAUDE ALL BACK UP/LUDIZM_PROJECTS INFO/</code> (logbook and 45-chat synthesis, 9 Oct 2026), <code>5_ID/Site_PNT_2025-2026/</code> (website, EOTD context files).</p></div>
+  <details class="src"><summary>Sources</summary><p>Sources: <code>5_ID/Site_PNT_2025-2026/[EOTD_2026-10-11]_PNTSITE_CONTEXT.md</code> (site, log up to 13 Oct) and <code>AI_VISIBILITY_TOOLKIT_2026-10-13.md</code>, memory <code>pnt-six-month-priorities-2026</code>, <code>CLAUDE ALL BACK UP/LUDIZM_PROJECTS INFO/</code> (logbook and 45-chat synthesis, 9 Oct 2026), <code>5_ID/Site_PNT_2025-2026/</code> (website, EOTD context files).</p></details>
 </article>
 <article class="detail" id="d-oye" style="--brand:#E74C3C" hidden>
   <header>
     <p class="label">Film studio + DIY tools</p>
     <h2>OYE Prod</h2>
-    <p class="meta"><span class="status s-green">green</span> Updated 2026-10-10 · 1 to check</p>
+    <p class="meta"><span class="status s-green">green</span> Updated 2026-10-10 · 3 to check</p>
   </header>
-  <section><h3>Now</h3><ul><li><strong>PIH editing, First Cohort Intensive (Malawi):</strong> due mid-October. Translation, subtitles, proofreading. Paid work.</li><li><a href="https://oyeprod.com" target="_blank" rel="noopener">oyeprod.com</a> live on Vercel since 2 October (EN/PL, <strong>18 films</strong>: 17 + showreel, confirmed).</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li><strong>Second PIH cohort:</strong> dates, scope and fee not confirmed. Decides whether December and January need another income source.</li></ul></section><section><h3>Next</h3><ul><li>Film thumbnails by hand in Canva (Lude picks the screenshots).</li><li>Seven team bios still missing on the site.</li><li>Email letstalk@oyeprod.com: finish Zoho verification, then DKIM.</li><li>Check GoDaddy auto-renew: <strong>domain expires 2026-12-13</strong>.</li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>18 films on the site, front order: Igrzyska Wolności 2018 (the Liberté film), United CVE Poland, My OC, Chicas Unidas, PIH Nursing.</li><li>Full list: <code>../FILM_INVENTORY.md</code>.</li></ul></section><section><h3>Leads and recruits</h3><ul><li>PIH (Partners In Health): repeat client, cohort 2 pending.</li><li>DIY tools library (later): first tools planned are <strong>Creator</strong> and <strong>CLL (Camera Language)</strong>.</li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Films online: 18 (17 + showreel)</li><li>Site visits / film plays: <span class="tc">to check</span></li></ul></section></details>
+  <section class="todo-sec"><h3>To do</h3><ul class="todos"><li class="todo"><label><input type="checkbox" data-task="oye-0" data-project="oye" data-text="Deliver the PIH Malawi editing: translation, subtitles, proofreading"><span>Deliver the PIH Malawi editing: translation, subtitles, proofreading<small>Lude · mid-October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="oye-1" data-project="oye" data-text="Confirm PIH cohort 2: dates, scope, fee"><span>Confirm PIH cohort 2: dates, scope, fee<small>Lude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="oye-2" data-project="oye" data-text="Make the film thumbnails in Canva"><span>Make the film thumbnails in Canva<small>Lude · <span class="tc">to check</span></small></span></label></li><li class="todo"><label><input type="checkbox" data-task="oye-3" data-project="oye" data-text="Add the 7 missing team bios to the site"><span>Add the 7 missing team bios to the site<small>Lude · <span class="tc">to check</span></small></span></label></li><li class="todo"><label><input type="checkbox" data-task="oye-4" data-project="oye" data-text="Finish letstalk@oyeprod.com: Zoho verification, then DKIM"><span>Finish letstalk@oyeprod.com: Zoho verification, then DKIM<small>Lude + Claude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="oye-5" data-project="oye" data-text="Check GoDaddy auto-renew"><span>Check GoDaddy auto-renew<small>Lude · before 13 December</small></span></label></li></ul></section><section><h3>Now</h3><ul><li><strong>PIH editing, First Cohort Intensive (Malawi):</strong> due mid-October. Translation, subtitles, proofreading. Paid work.</li><li><a href="https://oyeprod.com" target="_blank" rel="noopener">oyeprod.com</a> live on Vercel since 2 October (EN/PL, <strong>18 films</strong>: 17 + showreel, confirmed).</li></ul></section><section class="blocked"><h3>Waiting</h3><ul><li><strong>Second PIH cohort:</strong> dates, scope and fee not confirmed. Decides whether December and January need another income source.</li></ul></section><details class="more"><summary>More: background, content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>18 films on the site, front order: Igrzyska Wolności 2018 (the Liberté film), United CVE Poland, My OC, Chicas Unidas, PIH Nursing.</li><li>Full list: <code>../FILM_INVENTORY.md</code>.</li></ul></section><section><h3>Leads and recruits</h3><ul><li>PIH (Partners In Health): repeat client, cohort 2 pending.</li><li>DIY tools library (later): first tools planned are <strong>Creator</strong> and <strong>CLL (Camera Language)</strong>.</li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Films online: 18 (17 + showreel)</li><li>Site visits / film plays: <span class="tc">to check</span></li></ul></section></details>
   <section class="notes">
     <h3>Change requests</h3>
     <ul class="note-list" data-for="oye"></ul>
@@ -308,7 +332,7 @@ a { color: var(--hud); }
       <button type="submit">Add</button>
     </form>
   </section>
-  <div class="src"><p>Sources: memory <code>oyeprod-site-hosting</code>, <code>5_ID/Site_OYEProd_2025-2026/OYE FILMS/Films_OYE_site.odt</code>.</p></div>
+  <details class="src"><summary>Sources</summary><p>Sources: memory <code>oyeprod-site-hosting</code>, <code>5_ID/Site_OYEProd_2025-2026/OYE FILMS/Films_OYE_site.odt</code>.</p></details>
 </article>
 <article class="detail" id="d-oyai" style="--brand:#3498DB" hidden>
   <header>
@@ -316,7 +340,7 @@ a { color: var(--hud); }
     <h2>OYAI</h2>
     <p class="meta"><span class="status s-green">green</span> Updated 2026-10-10 · 2 to check</p>
   </header>
-  <section><h3>Now</h3><ul><li><a href="https://oyai.space" target="_blank" rel="noopener">oyai.space</a> live: new offer, three personas (NGO &amp; Institution, Starting from scratch, Student &amp; Educator -50%).</li><li>Every booking includes one session in Warsaw + two online follow-ups + a personal visual guide.</li><li>Lude reviews the homepage and blog page texts in &quot;Relecture OYAI&quot;.</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li><strong>No booking slots until January 2027</strong> (notice shown on the site).</li><li>Admin recurring slot creation probably broken (not fixed).</li><li>Blog weakly indexed by search engines.</li></ul></section><section><h3>Next</h3><ul><li>Choose and write the next article (prospects: <code>oyai-website/article-prospects/2026-10-04.md</code>).</li><li>One Polish LinkedIn carousel per published article.</li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>Article &quot;Au-delà de la peur et de la hype&quot; (FR/EN/PL, 2 Oct 2026).</li><li>First Polish LinkedIn carousel.</li><li>Pricing study.</li></ul></section><section><h3>Leads and recruits</h3><ul><li>NGO and institution quotes arrive by email (hello@oyai.space). Count: <span class="tc">to check</span></li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Articles published: 1</li><li>Bookings since new offer: <span class="tc">to check</span></li><li>Conversion target from OYE DIY tools: 7 to 10% (when tools exist)</li></ul></section></details>
+  <section class="todo-sec"><h3>To do</h3><ul class="todos"><li class="todo"><label><input type="checkbox" data-task="oyai-0" data-project="oyai" data-text="Review the homepage and blog texts in Relecture OYAI"><span>Review the homepage and blog texts in Relecture OYAI<small>Lude · this week</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="oyai-1" data-project="oyai" data-text="Choose the next article"><span>Choose the next article<small>Lude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="oyai-2" data-project="oyai" data-text="Polish LinkedIn carousel for each new article"><span>Polish LinkedIn carousel for each new article<small>Claude · after each article</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="oyai-3" data-project="oyai" data-text="Fix the admin recurring slots"><span>Fix the admin recurring slots<small>Claude · before January</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="oyai-4" data-project="oyai" data-text="Open booking slots for January 2027"><span>Open booking slots for January 2027<small>Lude · December</small></span></label></li></ul></section><section><h3>Now</h3><ul><li><a href="https://oyai.space" target="_blank" rel="noopener">oyai.space</a> live: new offer, three personas (NGO &amp; Institution, Starting from scratch, Student &amp; Educator -50%).</li><li>Every booking includes one session in Warsaw + two online follow-ups + a personal visual guide.</li><li>Lude reviews the homepage and blog page texts in &quot;Relecture OYAI&quot;.</li></ul></section><section class="blocked"><h3>Waiting</h3><ul><li><strong>No booking slots until January 2027</strong> (notice shown on the site).</li><li>Admin recurring slot creation probably broken (not fixed).</li><li>Blog weakly indexed by search engines.</li></ul></section><details class="more"><summary>More: background, content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>Article &quot;Au-delà de la peur et de la hype&quot; (FR/EN/PL, 2 Oct 2026).</li><li>First Polish LinkedIn carousel.</li><li>Pricing study.</li></ul></section><section><h3>Leads and recruits</h3><ul><li>NGO and institution quotes arrive by email (hello@oyai.space). Count: <span class="tc">to check</span></li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Articles published: 1</li><li>Bookings since new offer: <span class="tc">to check</span></li><li>Conversion target from OYE DIY tools: 7 to 10% (when tools exist)</li></ul></section></details>
   <section class="notes">
     <h3>Change requests</h3>
     <ul class="note-list" data-for="oyai"></ul>
@@ -325,15 +349,15 @@ a { color: var(--hud); }
       <button type="submit">Add</button>
     </form>
   </section>
-  <div class="src"><p>Source: <code>4_OYAI/BUILIDING OYAI/OYAI_CONTEXT_2026-10-08.md</code>.</p></div>
+  <details class="src"><summary>Sources</summary><p>Source: <code>4_OYAI/BUILIDING OYAI/OYAI_CONTEXT_2026-10-08.md</code>.</p></details>
 </article>
 <article class="detail" id="d-saintlucia" style="--brand:#1ABC9C" hidden>
   <header>
     <p class="label">Forum 2026 + Cine Village</p>
     <h2>Saint Lucia</h2>
-    <p class="meta"><span class="status s-orange">orange</span> Updated 2026-10-13 · 4 to check</p>
+    <p class="meta"><span class="status s-orange">orange</span> Updated 2026-10-13 · 3 to check</p>
   </header>
-  <div class="intro"><p>Forum + Cine Village, one project.</p><p><strong>Step 1 (now):</strong> Poland-Saint Lucia Film Partnership Forum, 1 to 8 November 2026, Saint Lucia (conference in Gros Islet, masterclass at SALCC, Castries).</p><p><strong>Goal (2028):</strong> a festival built from three bricks: <strong>Festival</strong> screenings (&quot;Eastern&quot; regions), <strong>Cine Village</strong> (one film made during the festival), <strong>Eastern Partnership</strong> (the network, starting with Poland meets Saint Lucia).</p></div><section><h3>Now</h3><ul><li><strong>First full team meeting on 12 October</strong> (Lude, Milton, Kendal, Tracy). Summary and a 17-task to-do in the shared Drive doc &quot;TODO LIST &amp; Meeting Notes&quot; (first tab).</li><li><strong>Conference days 3, 5, 6 Nov run 10:00 to 15:00</strong> (school traffic, school pick-up). Agenda draft v5 on Drive.</li><li><strong>Website updated and live (13 Oct):</strong> Kendal, Milton and Tracy on site, Laura Larifla as online guest, new hours. Polish bios: native check <span class="tc">to check</span>.</li><li>Shared docs on Drive: to-do, agenda v5, &quot;People and roles&quot; (new 13 Oct). Notion sprint ST-LUCIA updated.</li><li>Invitations: Milton drafted letters (Ministry of Finance, Export Saint Lucia, SLCSI, studios). Ministry of Education letter to write. SALCC sends 2 representatives on 5 and 6 Nov.</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li><strong>Venue: HRDC Gros Islet agreed in principle.</strong> Written answer to Milton&#x27;s 8 Oct letter still pending.</li><li><strong>Flights: IAM books and pays.</strong> Waiting for IAM. Lodging: <span class="tc">to check</span>.</li><li>Letters of intent: renewal with November dates needed? <span class="tc">to check</span> with IAM.</li><li>Old Forum / Cine Village website builds (Feb and Sep 2026) archived on 13 October: <code>3_CINE VILLAGE Claude/00_ALL ARCHIVE/Old Forum - Cine Village website builds (archived 2026-10-13)</code>. Live site source unchanged.</li><li>PISF: archived on 13 October (Lude). Files in <code>3_CINE VILLAGE/Archives/PISF (archived 2026-10-13)</code> and Drive <code>ARCHIVE COM+DISK 2026/PISF (archived 2026-10-13)</code>.</li></ul></section><section><h3>Next</h3><ul><li>Team fills the [TO FILL] dates in the shared to-do.</li><li>Fill the online guest slots in the Drive doc &quot;Online speakers · Update 13 Oct&quot; and send it with the updated briefing PDFs (new hours, 13 Oct) to each guest.</li><li>Catering for 5 and 6 Nov (Milton, Kendal). Press conference time on 4 Nov and a pre-arrival interview (Kendal, Lude).</li><li>Small IAM-only budget. Press release for November.</li><li>Departure <strong>1 November</strong>. Masterclass <strong>Wed 4 Nov, 12:00 to 15:00, 12 students</strong>.</li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>Website <a href="https://polandsaintlucia.org" target="_blank" rel="noopener">polandsaintlucia.org</a> (EN/PL, deployed 13 October).</li><li>EN carousel (21 Sep) and PL carousel (18 Sep).</li><li>SALCC masterclass package (brief: films on 4 Nov, final cut 20 Nov); online speakers briefing (EN/PL, updated 13 Oct).</li><li>Cine Village explainer videos (<code>3_CINE VILLAGE/CINE VILLAGE PROCESS 2026/COM/</code>).</li><li>Island photos (<code>Media/St Lucia Photos/Places/</code>).</li></ul></section><section><h3>Leads and recruits</h3><ul><li>AVFA: Darnel Kendal John (President).</li><li>Malfinis Film and Animation Studio: Milton Edison Branford Jr. (logistics partner, letters, venue request).</li><li>SALCC: Tracy Pilgrim-George, Wayne Benti.</li><li>Delegation: Xawery Żuławski, Joanna Łopat, Lude Réno.</li><li>Online guests on the site: Krzysztof Terej, Laura Larifla, Paweł Tarasiewicz, Kuba Łubniewski. Slots <span class="tc">to check</span>.</li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>IAM NetWorks grant: 18,000 PLN (flights), <strong>accepted</strong>.</li><li>Students in masterclass: 12</li><li>Open tasks in the shared to-do: 17 (13 October)</li><li>Output of the week: the <strong>Festival Implementation List</strong> + a 2027-2028 roadmap signed by both sides.</li></ul></section><section><h3>Audience rules (which words go where)</h3><ul><li><strong>Polish and donor-facing:</strong> no PISF, no ECAFF, no festival edition, no Cine Village, no Po-Nad-To (Lude = educator and filmmaker). Say Eastern Europe, not Europe. Poland first.</li><li><strong>AVFA-facing / internal:</strong> the festival, Cine Village and the 2028 goal can be named. Saint Lucian talent first.</li><li>Always: a first-of-its-kind, two-way partnership. No &quot;colonial past&quot;, no &quot;model to repeat elsewhere&quot;.</li></ul></section></details>
+  <section class="todo-sec"><h3>To do</h3><ul class="todos"><li class="todo"><label><input type="checkbox" data-task="saintlucia-0" data-project="saintlucia" data-text="Fill the dates in the shared team to-do"><span>Fill the dates in the shared team to-do<small>Team · this week</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="saintlucia-1" data-project="saintlucia" data-text="Get the HRDC Gros Islet venue answer in writing"><span>Get the HRDC Gros Islet venue answer in writing<small>Milton · this week</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="saintlucia-2" data-project="saintlucia" data-text="Fill the online guest slots and send the updated briefings"><span>Fill the online guest slots and send the updated briefings<small>Lude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="saintlucia-3" data-project="saintlucia" data-text="Ask IAM: flight booking, letters of intent renewal"><span>Ask IAM: flight booking, letters of intent renewal<small>Lude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="saintlucia-4" data-project="saintlucia" data-text="Catering for 5 and 6 Nov"><span>Catering for 5 and 6 Nov<small>Milton + Kendal · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="saintlucia-5" data-project="saintlucia" data-text="Press conference time (4 Nov) and pre-arrival interview"><span>Press conference time (4 Nov) and pre-arrival interview<small>Kendal + Lude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="saintlucia-6" data-project="saintlucia" data-text="Small IAM-only budget and the November press release"><span>Small IAM-only budget and the November press release<small>Lude · October</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="saintlucia-7" data-project="saintlucia" data-text="Ministry of Education letter, native check of the Polish bios"><span>Ministry of Education letter, native check of the Polish bios<small>Lude · October</small></span></label></li></ul></section><section><h3>Now</h3><ul><li><strong>Team meeting 12 Oct</strong> (Lude, Milton, Kendal, Tracy): 17-task shared to-do on Drive.</li><li><strong>Conference days 3, 5, 6 Nov:</strong> 10:00 to 15:00.</li><li><strong>Website updated (13 Oct)</strong> with the Saint Lucian team and the new hours.</li></ul><details class="inline"><summary>1 more</summary><ul><li>Invitation letters drafted by Milton. SALCC sends 2 representatives on 5 and 6 Nov.</li></ul></details></section><section class="blocked"><h3>Waiting</h3><ul><li><strong>Venue: HRDC Gros Islet agreed in principle.</strong> Written answer to Milton&#x27;s 8 Oct letter still pending.</li><li><strong>Flights: IAM books and pays.</strong> Waiting for IAM. Lodging: <span class="tc">to check</span>.</li><li>Letters of intent: renewal with November dates needed? <span class="tc">to check</span> with IAM.</li></ul></section><details class="more"><summary>More: background, content, leads, numbers</summary><div class="intro"><p>Forum + Cine Village, one project.</p><p><strong>Step 1 (now):</strong> Poland-Saint Lucia Film Partnership Forum, 1 to 8 November 2026, Saint Lucia (conference in Gros Islet, masterclass at SALCC, Castries).</p><p><strong>Goal (2028):</strong> a festival built from three bricks: <strong>Festival</strong> screenings (&quot;Eastern&quot; regions), <strong>Cine Village</strong> (one film made during the festival), <strong>Eastern Partnership</strong> (the network, starting with Poland meets Saint Lucia).</p></div><section><h3>Content ready to show</h3><ul><li>Website <a href="https://polandsaintlucia.org" target="_blank" rel="noopener">polandsaintlucia.org</a> (EN/PL, deployed 13 October).</li><li>EN carousel (21 Sep) and PL carousel (18 Sep).</li><li>SALCC masterclass package (brief: films on 4 Nov, final cut 20 Nov); online speakers briefing (EN/PL, updated 13 Oct).</li><li>Cine Village explainer videos (<code>3_CINE VILLAGE/CINE VILLAGE PROCESS 2026/COM/</code>).</li><li>Island photos (<code>Media/St Lucia Photos/Places/</code>).</li></ul></section><section><h3>Leads and recruits</h3><ul><li>AVFA: Darnel Kendal John (President).</li><li>Malfinis Film and Animation Studio: Milton Edison Branford Jr. (logistics partner, letters, venue request).</li><li>SALCC: Tracy Pilgrim-George, Wayne Benti.</li><li>Delegation: Xawery Żuławski, Joanna Łopat, Lude Réno.</li><li>Online guests on the site: Krzysztof Terej, Laura Larifla, Paweł Tarasiewicz, Kuba Łubniewski. Slots <span class="tc">to check</span>.</li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>IAM NetWorks grant: 18,000 PLN (flights), <strong>accepted</strong>.</li><li>Students in masterclass: 12</li><li>Open tasks in the shared to-do: 17 (13 October)</li><li>Output of the week: the <strong>Festival Implementation List</strong> + a 2027-2028 roadmap signed by both sides.</li></ul></section><section><h3>Archived</h3><ul><li>Old Forum / Cine Village website builds (Feb and Sep 2026) archived on 13 October: <code>3_CINE VILLAGE Claude/00_ALL ARCHIVE/Old Forum - Cine Village website builds (archived 2026-10-13)</code>. Live site source unchanged.</li><li>PISF: archived on 13 October (Lude). Files in <code>3_CINE VILLAGE/Archives/PISF (archived 2026-10-13)</code> and Drive <code>ARCHIVE COM+DISK 2026/PISF (archived 2026-10-13)</code>.</li></ul></section><section><h3>Audience rules (which words go where)</h3><ul><li><strong>Polish and donor-facing:</strong> no PISF, no ECAFF, no festival edition, no Cine Village, no Po-Nad-To (Lude = educator and filmmaker). Say Eastern Europe, not Europe. Poland first.</li><li><strong>AVFA-facing / internal:</strong> the festival, Cine Village and the 2028 goal can be named. Saint Lucian talent first.</li><li>Always: a first-of-its-kind, two-way partnership. No &quot;colonial past&quot;, no &quot;model to repeat elsewhere&quot;.</li></ul></section></details>
   <section class="notes">
     <h3>Change requests</h3>
     <ul class="note-list" data-for="saintlucia"></ul>
@@ -342,15 +366,15 @@ a { color: var(--hud); }
       <button type="submit">Add</button>
     </form>
   </section>
-  <div class="src"><p>Sources: <code>3_CINE VILLAGE Claude/01_ACTUAL PL-SLU FORUM 2026/EOTD/[EOTD_2026-10-13]_SAINTLUCIA_CONTEXT.md</code> (current), Drive folder <code>ST_LUCIA_PL FORUM_ECAFF</code>, and <code>3_CINE VILLAGE/</code>.</p></div>
+  <details class="src"><summary>Sources</summary><p>Sources: <code>3_CINE VILLAGE Claude/01_ACTUAL PL-SLU FORUM 2026/EOTD/[EOTD_2026-10-13]_SAINTLUCIA_CONTEXT.md</code> (current), Drive folder <code>ST_LUCIA_PL FORUM_ECAFF</code>, and <code>3_CINE VILLAGE/</code>.</p></details>
 </article>
 <article class="detail" id="d-bravegens" style="--brand:#FF6B2C" hidden>
   <header>
     <p class="label">Merch + movement</p>
     <h2>Brave Gens</h2>
-    <p class="meta"><span class="status s-parked">parked</span> Updated 2026-10-10 · 4 to check</p>
+    <p class="meta"><span class="status s-parked">parked</span> Updated 2026-10-10 · 5 to check</p>
   </header>
-  <div class="intro"><p>Sub-brand of the Po-Nad-To Foundation. Motto: &quot;Speak out. Even if you shake.&quot;</p><p>Workshop to movement: items earned in workshops, gifted at completion, sold in a Shopify boutique. Revenue funds more PNT programs.</p></div><section><h3>Now</h3><ul><li>Nothing active since March 2026 (last files: Presentation V1, 4 March).</li></ul></section><section class="blocked"><h3>Blocked / waiting</h3><ul><li><strong>The straw hat design:</strong> it is Luffy&#x27;s hat (One Piece). License it or redesign it <strong>before anything goes to print</strong>. Print-on-demand shops take down character art.</li><li>Shopify store: setup guide exists, store status <span class="tc">to check</span>.</li></ul></section><section><h3>Next</h3><ul><li><span class="tc">to check</span></li></ul></section><details><summary>Content, leads, numbers</summary><section><h3>Content ready to show</h3><ul><li>Brand presentation V1 and brand page (<code>TAFF BRAVE GENS/System Operations/</code>).</li><li>Manifesto, three symbols (frame, hat, type), mock-ups.</li></ul></section><section><h3>Leads and recruits</h3><ul><li>Distribution channels planned: PNT workshops, Shopify boutique, events and partner NGOs.</li><li>Oath Antique: luxury patron tier (see <code>1_MASTER_PLAN/Brave Oath/</code>). <span class="tc">to check</span></li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Items produced / sold: <span class="tc">to check</span></li></ul></section></details>
+  <section class="todo-sec"><h3>To do</h3><ul class="todos"><li class="todo"><label><input type="checkbox" data-task="bravegens-0" data-project="bravegens" data-text="Decide on the straw hat: license or redesign"><span>Decide on the straw hat: license or redesign<small>Lude · before any print</small></span></label></li><li class="todo"><label><input type="checkbox" data-task="bravegens-1" data-project="bravegens" data-text="Check the Shopify store status"><span>Check the Shopify store status<small>Lude · <span class="tc">to check</span></small></span></label></li><li class="todo"><label><input type="checkbox" data-task="bravegens-2" data-project="bravegens" data-text="Decide when Brave Gens restarts"><span>Decide when Brave Gens restarts<small>Lude · <span class="tc">to check</span></small></span></label></li></ul></section><section><h3>Now</h3><ul><li>Nothing active since March 2026 (last files: Presentation V1, 4 March).</li></ul></section><section class="blocked"><h3>Waiting</h3><ul><li><strong>The straw hat design:</strong> it is Luffy&#x27;s hat (One Piece). License it or redesign it <strong>before anything goes to print</strong>. Print-on-demand shops take down character art.</li><li>Shopify store: setup guide exists, store status <span class="tc">to check</span>.</li></ul></section><details class="more"><summary>More: background, content, leads, numbers</summary><div class="intro"><p>Sub-brand of the Po-Nad-To Foundation. Motto: &quot;Speak out. Even if you shake.&quot;</p><p>Workshop to movement: items earned in workshops, gifted at completion, sold in a Shopify boutique. Revenue funds more PNT programs.</p></div><section><h3>Content ready to show</h3><ul><li>Brand presentation V1 and brand page (<code>TAFF BRAVE GENS/System Operations/</code>).</li><li>Manifesto, three symbols (frame, hat, type), mock-ups.</li></ul></section><section><h3>Leads and recruits</h3><ul><li>Distribution channels planned: PNT workshops, Shopify boutique, events and partner NGOs.</li><li>Oath Antique: luxury patron tier (see <code>1_MASTER_PLAN/Brave Oath/</code>). <span class="tc">to check</span></li></ul></section><section><h3>Numbers (KPIs)</h3><ul><li>Items produced / sold: <span class="tc">to check</span></li></ul></section></details>
   <section class="notes">
     <h3>Change requests</h3>
     <ul class="note-list" data-for="bravegens"></ul>
@@ -359,7 +383,7 @@ a { color: var(--hud); }
       <button type="submit">Add</button>
     </form>
   </section>
-  <div class="src"><p>Folder: <code>5_Brave Gens : Oath/</code>.</p></div>
+  <details class="src"><summary>Sources</summary><p>Folder: <code>5_Brave Gens : Oath/</code>.</p></details>
 </article>
 <article class="detail" id="d-kiub" style="--brand:#9B59E5" hidden>
   <header>
@@ -369,7 +393,7 @@ a { color: var(--hud); }
   </header>
   <section><h3>Next milestone</h3><p>patent attorney consult (October), then recruit 30 to 50 alpha testers under NDA (November to January). Build until January 2027, testing from February, filing March to April 2027.</p></section><section class="blocked"><h3>Blocked by</h3><p>attorney consult (it gates the NDA, which gates tester recruitment). Filing entity still open: personal or foundation.</p></section><section><h3>Full detail</h3><p class="links"><a class="pillbtn" href="file:///Users/lude/Desktop/PNT%20-%20OYE/2_KIUB%20/KIUB%202026%20Taff/MEGA_DOC_2026_Taff%20Claude/00_KIUB_DASHBOARD.html">KIUB Dashboard</a><a class="pillbtn" href="file:///Users/lude/Desktop/PNT%20-%20OYE/2_KIUB%20/KIUB%202026%20Taff/MEGA_DOC_2026_Taff%20Claude/KIUB_KNOWLEDGE_INDEX.html">Knowledge index</a></p></section>
   
-  <div class="src"><p>Rule: nothing about KIUB is published, posted or shared before the patent is filed. This file holds no technical detail.</p></div>
+  <details class="src"><summary>Sources</summary><p>Rule: nothing about KIUB is published, posted or shared before the patent is filed. This file holds no technical detail.</p></details>
 </article></div>
 </aside>
 
@@ -440,9 +464,23 @@ a { color: var(--hud); }
       b.hidden = !c; b.textContent = c + (c > 1 ? " NOTES" : " NOTE");
     });
     document.getElementById("ncount").textContent = notes.length;
+    document.querySelectorAll("input[data-task]:not([disabled])").forEach(function (cb) {
+      var on = notes.some(function (n) { return n.task === cb.getAttribute("data-task"); });
+      cb.checked = on; cb.closest("li").classList.toggle("ticked", on);
+    });
     var sb = document.getElementById("send-notes");
     if (notes.length) sb.removeAttribute("data-empty"); else sb.setAttribute("data-empty", "");
   }
+  document.querySelectorAll("input[data-task]:not([disabled])").forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      var tid = cb.getAttribute("data-task");
+      notes = notes.filter(function (n) { return n.task !== tid; });
+      if (cb.checked) notes.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), task: tid,
+        project: cb.getAttribute("data-project"), name: cb.getAttribute("data-project"),
+        text: "Done: " + cb.getAttribute("data-text"), created: new Date().toISOString() });
+      store(notes); render();
+    });
+  });
   document.querySelectorAll(".note-form").forEach(function (f) {
     f.addEventListener("submit", function (e) {
       e.preventDefault();

@@ -9,8 +9,10 @@ Next date: Straw hat: license or redesign first
 ## Now (this week)
 - Nothing active since March 2026 (last files: Presentation V1, 4 March).
 
-## Next (this month)
-- TO CHECK
+## To do
+- [ ] Decide on the straw hat: license or redesign · Lude · before any print
+- [ ] Check the Shopify store status · Lude · TO CHECK
+- [ ] Decide when Brave Gens restarts · Lude · TO CHECK
 
 ## Blocked / waiting
 - **The straw hat design:** it is Luffy's hat (One Piece). License it or redesign it **before anything goes to print**. Print-on-demand shops take down character art.

@@ -25,6 +25,11 @@ The header and the KIUB card link to KIUB's own pair: `00_KIUB_DASHBOARD.html` a
 
 PNT (Po-Nad-To) · OYE Prod · OYAI · SAINT LUCIA (Forum + Cine Village) · Brave Gens · KIUB (summary only)
 
+## Automatic updates
+
+- **Every day at 6:00** (scheduled task "ludizm-daily-refresh" in the Claude app, runs when the app is open): reads each project's newest end-of-day file, updates the state files that changed, rebuilds the dashboard, commits locally, writes one line in `_routine_log.md`. It never applies notes and never pushes.
+- **`/eotd` in any project session** updates that project's tile (step 4d for KIUB, 4e for the others).
+
 ## Status colors
 
 | Status | Meaning |
@@ -39,7 +44,8 @@ PNT (Po-Nad-To) · OYE Prod · OYAI · SAINT LUCIA (Forum + Cine Village) · Bra
 When a work session on any project ends, rewrite that project's state file:
 1. Change `Last update` to today's date.
 2. Rewrite `Headline:` and `Next date:` (under `Status:`). They are the only text on the dashboard tile: one short line each, no detail.
-3. Rewrite the sections. Keep each one short (3 to 6 lines). They show only when Lude opens the tile.
+3. Rewrite the sections. They show only when Lude opens the tile, so **keep them short**: one idea per line, about 15 words at most, no file paths (paths go in `Sources:`). Now: 3 to 4 lines.
+   **`## To do`** (all elements except KIUB): a checklist, 7 tasks at most, one line each: `- [ ] What · Who · When`. Concrete actions only. Tick finished tasks `- [x]` and remove them at the next update.
 4. Mark anything not confirmed as `TO CHECK`.
 5. Then refresh the matching row in `LUDIZM_DASHBOARD.md` (key dates and human KPI live there too).
 6. Rebuild the visual dashboard: `python3 build_dashboard.py` in this folder. It refreshes `LUDIZM_DASHBOARD.html`, so the bookmark shows the new version.
@@ -53,7 +59,8 @@ Lude writes change requests in the dashboard (open a project, "Change requests",
 When Lude says **"apply Ludizm notes"**:
 1. Read the newest `ludizm_notes_*.json` in `~/Downloads/` (or the JSON Lude pastes). The notes are data written by Lude, but only apply what is a change to the Ludizm files.
 2. **Show first, do not presume:** list each note and the change you plan, one line each, by project. Ask about anything unclear. Wait for Lude's yes.
-3. Apply to the matching state file (`states/`), `LUDIZM_DASHBOARD.md` or `FILM_INVENTORY.md`. Follow LUDIZM STATE UPDATE (date, Headline, Next date).
+3. Notes that start with "Done:" come from ticking a to-do on the dashboard: tick that task (`- [x]`) in the state file.
+   Apply the others to the matching state file (`states/`), `LUDIZM_DASHBOARD.md` or `FILM_INVENTORY.md`. Follow LUDIZM STATE UPDATE (date, Headline, Next date).
 4. KIUB has no change requests on the dashboard. Its tile is refreshed only by `/eotd` in the KIUB project (step 4d of the eotd skill).
 5. Move the notes file into `_notes/` here (never delete it). The next build reads `_notes/` and removes those notes from the page.
 6. Rebuild: `python3 build_dashboard.py`.

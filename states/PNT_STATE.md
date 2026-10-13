@@ -5,18 +5,19 @@ Headline: New site in 6 languages with a text editor, waiting for Lude's review
 Next date: Lude tries the editing page, then review and launch (October)
 
 ## Now (this week)
-- **New ponadto.foundation site built on 11 October** to leave Wix: static site, 96 films from Notion with Camelia's thumbnails, accessibility menu, demo film on YouTube, partners strip. Runs locally, not online yet. Context: `1_PNT_OYE /5_ID/Site_PNT_2025-2026/[EOTD_2026-10-11]_PNTSITE_CONTEXT.md` (session log up to 13 Oct).
-- **12 to 13 October:** five language versions (PL, FR, ES, KA, UK) with a switcher; an editing page for the site texts (French as base); hero animation removed. AI search study and an AI visibility toolkit (identity sentence in EN/PL/FR) written on 13 Oct: `Site_PNT_2025-2026/AI_VISIBILITY_TOOLKIT_2026-10-13.md`.
-- Workshops **Ferajna** (with Margarita Minkevich) started 9 October, run to mid-December.
-- Workshops **AMONDO** (with Margarita), Cycle 1 October to December. Visuals still to create (TO CHECK).
-- Both are forks of the Kino 2026 pipeline (Wix page + Tally form + Apps Script + regulamin + RODO).
+- **New ponadto.foundation site** built (11 Oct): 96 films, accessibility menu, demo film. Not online yet.
+- **6 languages** and a text-editing page added (12 to 13 Oct). AI visibility toolkit written.
+- Workshops **Ferajna** (with Margarita Minkevich): 9 Oct to mid-December.
+- Workshops **AMONDO** (with Margarita): cycle 1, October to December.
 
-## Next (this month)
-- Website: Lude tries the editing page on one sentence and sends design references (3 to 5 sites liked, 1 or 2 disliked). Then review, deploy to Vercel, point the domain, cancel Wix. Before launch: form endpoint, donation method, reports PDFs, missing partner logos, native check of the translations (TO CHECK).
-- 18 film thumbnails to set on the YouTube channel (files ready in `Site_PNT_2025-2026/yt-thumbs/`).
-- File the **2024 and 2025 activity reports** before end of 2026 (accountant booked).
-- Fix **one canonical set of numbers** (years, countries, participants, projects) for every deck and for the site's facts row (TO CHECK: the site shows the Wix numbers for now).
-- Build a one-page facts sheet (does not exist yet).
+## To do
+- [ ] Try the site editing page on one sentence · Lude · this week
+- [ ] Send design references: 3 to 5 sites liked, 1 or 2 disliked · Lude · this week
+- [ ] Review the new site, then launch: Vercel, domain, cancel Wix · Lude + Claude · October
+- [ ] Before launch: form, donations, report PDFs, partner logos, native check of translations · Claude + Lude · October
+- [ ] Set the 18 film thumbnails on YouTube · Lude · October
+- [ ] Choose the canonical numbers (years, countries, participants, projects) and a one-page facts sheet · Lude · TO CHECK
+- [ ] File the 2024 and 2025 activity reports · Lude + accountant · end of 2026
 
 ## Blocked / waiting
 - Website launch: Lude's test of the editing page, design references, review and go-ahead.
@@ -37,4 +38,4 @@ Next date: Lude tries the editing page, then review and launch (October)
 - Human KPI: TO CHECK (participant quotes from Ferajna / AMONDO)
 - Participants this season: TO CHECK
 
-Sources: memory `pnt-six-month-priorities-2026`, `CLAUDE ALL BACK UP/LUDIZM_PROJECTS INFO/` (logbook and 45-chat synthesis, 9 Oct 2026), `5_ID/Site_PNT_2025-2026/` (website, EOTD context files).
+Sources: `5_ID/Site_PNT_2025-2026/[EOTD_2026-10-11]_PNTSITE_CONTEXT.md` (site, log up to 13 Oct) and `AI_VISIBILITY_TOOLKIT_2026-10-13.md`, memory `pnt-six-month-priorities-2026`, `CLAUDE ALL BACK UP/LUDIZM_PROJECTS INFO/` (logbook and 45-chat synthesis, 9 Oct 2026), `5_ID/Site_PNT_2025-2026/` (website, EOTD context files).
