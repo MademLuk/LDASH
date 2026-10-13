@@ -17,7 +17,7 @@ Next date: Departure 1 November
 
 ## Next (this month)
 - Team fills the [TO FILL] dates in the shared to-do.
-- Fill the online guest slots in the Drive doc "Online speakers · Update 13 Oct" and send it to each guest (the briefing PDFs still say 09:20).
+- Fill the online guest slots in the Drive doc "Online speakers · Update 13 Oct" and send it with the updated briefing PDFs (new hours, 13 Oct) to each guest.
 - Catering for 5 and 6 Nov (Milton, Kendal). Press conference time on 4 Nov and a pre-arrival interview (Kendal, Lude).
 - Small IAM-only budget. Press release for November.
 - Departure **1 November**. Masterclass **Wed 4 Nov, 12:00 to 15:00, 12 students**.
@@ -32,7 +32,7 @@ Next date: Departure 1 November
 ## Content ready to show
 - Website polandsaintlucia.org (EN/PL, deployed 13 October).
 - EN carousel (21 Sep) and PL carousel (18 Sep).
-- SALCC masterclass package (brief: films on 4 Nov, final cut 20 Nov); online speakers briefing (EN/PL, hours outdated).
+- SALCC masterclass package (brief: films on 4 Nov, final cut 20 Nov); online speakers briefing (EN/PL, updated 13 Oct).
 - Cine Village explainer videos (`3_CINE VILLAGE/CINE VILLAGE PROCESS 2026/COM/`).
 - Island photos (`Media/St Lucia Photos/Places/`).
 
