@@ -11,8 +11,6 @@ Next date: Lude tries the editing page, then review and launch (October)
 - Workshops **AMONDO** (with Margarita), Cycle 1 October to December. Visuals still to create (TO CHECK).
 - Both are forks of the Kino 2026 pipeline (Wix page + Tally form + Apps Script + regulamin + RODO).
 
-- **Old website material archived (13 Oct):** Drive folder `ARCHIVE COM+DISK 2026/PONADTO - Site (old website, archived 2026-10-13)`.
-
 ## Next (this month)
 - Website: Lude tries the editing page on one sentence and sends design references (3 to 5 sites liked, 1 or 2 disliked). Then review, deploy to Vercel, point the domain, cancel Wix. Before launch: form endpoint, donation method, reports PDFs, missing partner logos, native check of the translations (TO CHECK).
 - 18 film thumbnails to set on the YouTube channel (files ready in `Site_PNT_2025-2026/yt-thumbs/`).

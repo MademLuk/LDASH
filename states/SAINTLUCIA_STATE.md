@@ -26,6 +26,7 @@ Next date: Departure 1 November
 - **Venue: HRDC Gros Islet agreed in principle.** Written answer to Milton's 8 Oct letter still pending.
 - **Flights: IAM books and pays.** Waiting for IAM. Lodging: TO CHECK.
 - Letters of intent: renewal with November dates needed? TO CHECK with IAM.
+- Old Forum / Cine Village website builds (Feb and Sep 2026) archived on 13 October: `3_CINE VILLAGE Claude/00_ALL ARCHIVE/Old Forum - Cine Village website builds (archived 2026-10-13)`. Live site source unchanged.
 - PISF: archived on 13 October (Lude). Files in `3_CINE VILLAGE/Archives/PISF (archived 2026-10-13)` and Drive `ARCHIVE COM+DISK 2026/PISF (archived 2026-10-13)`.
 
 ## Content ready to show
