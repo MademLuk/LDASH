@@ -26,7 +26,7 @@ Next date: Departure 1 November
 - **Venue: HRDC Gros Islet agreed in principle.** Written answer to Milton's 8 Oct letter still pending.
 - **Flights: IAM books and pays.** Waiting for IAM. Lodging: TO CHECK.
 - Letters of intent: renewal with November dates needed? TO CHECK with IAM.
-- Cine Village funding: PISF deferred, not lost.
+- PISF: archived on 13 October (Lude). Files in `3_CINE VILLAGE/Archives/PISF (archived 2026-10-13)` and Drive `ARCHIVE COM+DISK 2026/PISF (archived 2026-10-13)`.
 
 ## Content ready to show
 - Website polandsaintlucia.org (EN/PL, deployed 13 October).
