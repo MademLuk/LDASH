@@ -30,7 +30,7 @@ Next date: Departure 1 November
 - Letters of intent: renewal with November dates needed? TO CHECK with IAM.
 
 ## Archived
-- Old Forum / Cine Village website builds (Feb and Sep 2026) archived on 13 October: `3_CINE VILLAGE Claude/00_ALL ARCHIVE/Old Forum - Cine Village website builds (archived 2026-10-13)`. Live site source unchanged.
+- Old Forum / Cine Village website builds (Feb and Sep 2026) archived on 13 October: `3_CINE VILLAGE Claude/ALL ARCHIVE/Old Forum - Cine Village website builds (archived 2026-10-13)`. Live site source unchanged.
 - PISF: archived on 13 October (Lude). Files in `3_CINE VILLAGE/Archives/PISF (archived 2026-10-13)` and Drive `ARCHIVE COM+DISK 2026/PISF (archived 2026-10-13)`.
 
 ## Content ready to show
