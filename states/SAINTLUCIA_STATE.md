@@ -54,4 +54,4 @@ Next date: Departure 1 November
 - **AVFA-facing / internal:** the festival, Cine Village and the 2028 goal can be named. Saint Lucian talent first.
 - Always: a first-of-its-kind, two-way partnership. No "colonial past", no "model to repeat elsewhere".
 
-Sources: `3_CINE VILLAGE Claude/01_ACTUAL PL-SLU FORUM 2026/[EOTD_2026-10-13]_SAINTLUCIA_CONTEXT.md` (current), Drive folder `ST_LUCIA_PL FORUM_ECAFF`, and `3_CINE VILLAGE/`.
+Sources: `3_CINE VILLAGE Claude/01_ACTUAL PL-SLU FORUM 2026/EOTD/[EOTD_2026-10-13]_SAINTLUCIA_CONTEXT.md` (current), Drive folder `ST_LUCIA_PL FORUM_ECAFF`, and `3_CINE VILLAGE/`.
