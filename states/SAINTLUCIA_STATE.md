@@ -12,11 +12,12 @@ Next date: Departure 1 November
 - **First full team meeting on 12 October** (Lude, Milton, Kendal, Tracy). Summary and a 17-task to-do in the shared Drive doc "TODO LIST & Meeting Notes" (first tab).
 - **Conference days 3, 5, 6 Nov run 10:00 to 15:00** (school traffic, school pick-up). Agenda draft v5 on Drive.
 - **Website updated and live (13 Oct):** Kendal, Milton and Tracy on site, Laura Larifla as online guest, new hours. Polish bios: native check TO CHECK.
+- Shared docs on Drive: to-do, agenda v5, "People and roles" (new 13 Oct). Notion sprint ST-LUCIA updated.
 - Invitations: Milton drafted letters (Ministry of Finance, Export Saint Lucia, SLCSI, studios). Ministry of Education letter to write. SALCC sends 2 representatives on 5 and 6 Nov.
 
 ## Next (this month)
 - Team fills the [TO FILL] dates in the shared to-do.
-- Fix online guest slots inside 10:00 to 15:00; re-export the online speakers briefing (still says 09:20).
+- Fill the online guest slots in the Drive doc "Online speakers · Update 13 Oct" and send it to each guest (the briefing PDFs still say 09:20).
 - Catering for 5 and 6 Nov (Milton, Kendal). Press conference time on 4 Nov and a pre-arrival interview (Kendal, Lude).
 - Small IAM-only budget. Press release for November.
 - Departure **1 November**. Masterclass **Wed 4 Nov, 12:00 to 15:00, 12 students**.
