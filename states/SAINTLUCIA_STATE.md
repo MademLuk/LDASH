@@ -45,7 +45,7 @@ Next date: Departure 1 November
 - Malfinis Film and Animation Studio: Milton Edison Branford Jr. (logistics partner, letters, venue request).
 - SALCC: Tracy Pilgrim-George, Wayne Benti.
 - Delegation: Xawery Żuławski, Joanna Łopat, Lude Réno.
-- Online guests on the site: Krzysztof Terej, Laura Larifla, Paweł Tarasiewicz, Kuba Łubniewski. Slots TO CHECK.
+- Online guests on the site: Krzysztof Terej, Laura Larifla, Paweł Tarasiewicz, Kuba Łubniewski, Nadia Eddaïra (8 planned). Slots TO CHECK.
 
 ## Numbers (KPIs)
 - IAM NetWorks grant: 18,000 PLN (flights), **accepted**.
