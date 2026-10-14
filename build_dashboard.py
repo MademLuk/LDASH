@@ -172,10 +172,13 @@ def todo_html(eid, items):
         tid = f"{eid}-{i}"
         checked = " checked disabled" if t["done"] else ""
         meta = f'<small>{inline(t["meta"])}</small>' if t["meta"] else ""
-        lis += (f'<li class="todo{" done" if t["done"] else ""}"><label>'
+        lis += (f'<li class="todo{" done" if t["done"] else ""}" draggable="true" data-text="{html.escape(t["task"])}">'
+                f'<span class="grip" aria-hidden="true" title="Drag to change the priority">⋮⋮</span><label>'
                 f'<input type="checkbox" data-task="{tid}" data-project="{eid}" data-text="{html.escape(t["task"])}"{checked}>'
-                f'<span>{inline(t["task"])}{meta}</span></label></li>')
-    return f'<ul class="todos">{lis}</ul>'
+                f'<span>{inline(t["task"])}{meta}</span></label>'
+                f'<span class="move"><button type="button" data-move="-1" aria-label="Move up">▲</button>'
+                f'<button type="button" data-move="1" aria-label="Move down">▼</button></span></li>')
+    return f'<ul class="todos" data-project="{eid}">{lis}</ul>'
 
 
 def tile(idx, eid, name, color, d):
@@ -462,7 +465,18 @@ a {{ color: var(--hud); }}
   padding: 10px 14px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }}
 
 /* To do checklist */
-.todos li {{ padding-left: 0; margin: 4px 0; }}
+.todos li {{ padding-left: 0; margin: 4px 0; display: flex; align-items: stretch; gap: 0; }}
+.todos li > label {{ flex: 1; }}
+.todos li.dragging {{ opacity: .35; }}
+.todos li.over-top {{ box-shadow: 0 -2px 0 var(--hud); }}
+.todos li.over-bottom {{ box-shadow: 0 2px 0 var(--hud); }}
+.grip {{ cursor: grab; display: grid; place-items: center; width: 26px; color: var(--muted); font-size: 16px; letter-spacing: -3px;
+  border: 1px solid var(--line); border-right: 0; background: var(--glass); user-select: none; }}
+.grip:hover {{ color: var(--hud); }}
+.move {{ display: flex; flex-direction: column; border: 1px solid var(--line); border-left: 0; background: var(--glass); }}
+.move button {{ all: unset; cursor: pointer; flex: 1; padding: 0 8px; font-size: 10px; color: var(--muted); display: grid; place-items: center; }}
+.move button:hover, .move button:focus-visible {{ color: var(--hud); }}
+.note-list .sent {{ color: var(--s-orange); margin-left: 8px; }}
 .todos li::before {{ display: none; }}
 .todos label {{ display: flex; gap: 14px; align-items: flex-start; cursor: pointer; padding: 10px 12px;
   border: 1px solid var(--line); background: var(--glass); }}
@@ -583,7 +597,9 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
       notes.filter(function (n) {{ return n.project === id; }}).forEach(function (n) {{
         var li = document.createElement("li"), txt = document.createElement("span"), when = document.createElement("small"),
             del = document.createElement("button");
-        txt.textContent = n.text; when.textContent = n.created.slice(0, 16).replace("T", " "); txt.appendChild(when);
+        txt.textContent = n.text;
+        when.textContent = n.created.slice(0, 16).replace("T", " ") + (n.sent ? "  ·  sent, waiting to be applied" : "");
+        txt.appendChild(when);
         del.className = "note-del"; del.type = "button"; del.textContent = "✕"; del.setAttribute("aria-label", "Delete this note");
         del.addEventListener("click", function () {{ notes = notes.filter(function (x) {{ return x.id !== n.id; }}); store(notes); render(); }});
         li.appendChild(txt); li.appendChild(del); ul.appendChild(li);
@@ -598,6 +614,15 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
       var on = notes.some(function (n) {{ return n.task === cb.getAttribute("data-task"); }});
       cb.checked = on; cb.closest("li").classList.toggle("ticked", on);
     }});
+    document.querySelectorAll("ul.todos").forEach(function (ul) {{
+      var on = notes.filter(function (n) {{ return n.kind === "order" && n.project === ul.getAttribute("data-project"); }}).pop();
+      if (!on) return;
+      var items = Array.prototype.slice.call(ul.children);
+      items.sort(function (a, b) {{
+        var ia = on.order.indexOf(a.getAttribute("data-text")), ib = on.order.indexOf(b.getAttribute("data-text"));
+        return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+      }}).forEach(function (li) {{ ul.appendChild(li); }});
+    }});
     var sb = document.getElementById("send-notes");
     if (notes.length) sb.removeAttribute("data-empty"); else sb.setAttribute("data-empty", "");
   }}
@@ -609,6 +634,48 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
         project: cb.getAttribute("data-project"), name: cb.getAttribute("data-project"),
         text: "Done: " + cb.getAttribute("data-text"), created: new Date().toISOString() }});
       store(notes); render();
+    }});
+  }});
+  function saveOrder(ul) {{
+    var pid = ul.getAttribute("data-project");
+    var order = Array.prototype.map.call(ul.children, function (li) {{ return li.getAttribute("data-text"); }});
+    notes = notes.filter(function (n) {{ return !(n.kind === "order" && n.project === pid); }});
+    notes.push({{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: "order", project: pid, name: pid,
+      order: order, text: "New priority order: " + order.join(" > "), created: new Date().toISOString() }});
+    store(notes); render();
+  }}
+  var dragged = null;
+  document.querySelectorAll("ul.todos").forEach(function (ul) {{
+    ul.addEventListener("dragstart", function (e) {{
+      dragged = e.target.closest("li"); if (!dragged) return;
+      dragged.classList.add("dragging"); e.dataTransfer.effectAllowed = "move";
+      try {{ e.dataTransfer.setData("text/plain", dragged.getAttribute("data-text")); }} catch (x) {{}}
+    }});
+    ul.addEventListener("dragover", function (e) {{
+      var li = e.target.closest("li"); if (!dragged || !li || li === dragged || li.parentNode !== ul) return;
+      e.preventDefault();
+      var r = li.getBoundingClientRect(), after = e.clientY > r.top + r.height / 2;
+      ul.querySelectorAll("li").forEach(function (x) {{ x.classList.remove("over-top", "over-bottom"); }});
+      li.classList.add(after ? "over-bottom" : "over-top");
+    }});
+    ul.addEventListener("drop", function (e) {{
+      var li = e.target.closest("li"); if (!dragged || !li || li === dragged || li.parentNode !== ul) return;
+      e.preventDefault();
+      var r = li.getBoundingClientRect();
+      ul.insertBefore(dragged, e.clientY > r.top + r.height / 2 ? li.nextSibling : li);
+      saveOrder(ul);
+    }});
+    ul.addEventListener("dragend", function () {{
+      if (dragged) dragged.classList.remove("dragging"); dragged = null;
+      ul.querySelectorAll("li").forEach(function (x) {{ x.classList.remove("over-top", "over-bottom"); }});
+    }});
+    ul.addEventListener("click", function (e) {{
+      var b = e.target.closest("button[data-move]"); if (!b) return;
+      var li = b.closest("li"), step = +b.getAttribute("data-move");
+      var other = step < 0 ? li.previousElementSibling : li.nextElementSibling;
+      if (!other) return;
+      ul.insertBefore(li, step < 0 ? other : other.nextSibling);
+      saveOrder(ul); b.focus();
     }});
   }});
   document.querySelectorAll(".note-form").forEach(function (f) {{
@@ -627,6 +694,7 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
     var blob = new Blob([JSON.stringify({{ app: "ludizm", saved: new Date().toISOString(), notes: notes }}, null, 2)], {{ type: "application/json" }});
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
+    notes.forEach(function (n) {{ n.sent = true; }}); store(notes); render();
     toast("Sent (" + name + " in Downloads). Applied at 6:00, or now if you tell Claude: apply Ludizm notes.");
   }});
   render();
