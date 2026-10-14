@@ -178,9 +178,9 @@ def todo_html(eid, items):
             '<button type="button" data-move="1" aria-label="Move down">▼</button></span>'
             '<button type="button" class="edit" data-edit aria-label="Edit this task" title="Edit: text, who, when">✎</button>')
         return (f'<li class="todo{" done" if t["done"] else ""}"{drag} data-text="{html.escape(t["task"])}" data-who="{html.escape(t["who"])}" data-when="{html.escape(t["when"])}">'
-                f'{grip}<label>'
-                f'<input type="checkbox" data-task="{tid}" data-project="{eid}" data-text="{html.escape(t["task"])}"{checked}>'
-                f'<span>{inline(t["task"])}{meta}</span></label>{tools}'
+                f'{grip}<div class="tmain">'
+                f'<input type="checkbox" data-task="{tid}" data-project="{eid}" data-text="{html.escape(t["task"])}"{checked} aria-label="Mark as done: {html.escape(t["task"])}" title="Mark as done">'
+                f'<span>{inline(t["task"])}{meta}</span></div>{tools}'
                 f'<button type="button" class="edit remove" data-remove aria-label="Remove this task" title="Remove this task">🗑</button></li>')
     open_li = "".join(li(i, t) for i, t in enumerate(items) if not t["done"])
     done_li = "".join(li(i, t) for i, t in enumerate(items) if t["done"])
@@ -492,7 +492,8 @@ a {{ color: var(--hud); }}
 
 /* To do checklist */
 .todos li {{ padding-left: 0; margin: 4px 0; display: flex; align-items: stretch; gap: 0; }}
-.todos li > label {{ flex: 1; }}
+.todos li > .tmain {{ flex: 1; }}
+[hidden] {{ display: none !important; }}
 .todos li.dragging {{ opacity: .35; }}
 .todos li.over-top {{ box-shadow: 0 -2px 0 var(--hud); }}
 .todos li.over-bottom {{ box-shadow: 0 2px 0 var(--hud); }}
@@ -511,10 +512,10 @@ a {{ color: var(--hud); }}
 .done-todos {{ margin-top: 8px; }}
 .done-todos li {{ padding-left: 0; margin: 4px 0; display: flex; align-items: stretch; }}
 .done-todos li::before {{ display: none; }}
-.done-todos label {{ flex: 1; display: flex; gap: 14px; align-items: flex-start; padding: 8px 12px; border: 1px solid var(--line); background: var(--glass); }}
-.done-todos input {{ appearance: none; -webkit-appearance: none; flex: none; width: 18px; height: 18px; margin: 3px 0 0;
+.done-todos .tmain {{ flex: 1; display: flex; gap: 14px; align-items: flex-start; padding: 8px 12px; border: 1px solid var(--line); background: var(--glass); }}
+.done-todos input[type="checkbox"] {{ appearance: none; -webkit-appearance: none; flex: none; width: 18px; height: 18px; margin: 3px 0 0;
   border: 2px solid var(--s-green); background: var(--s-green); display: grid; place-items: center; }}
-.done-todos input::after {{ content: "✓"; color: #000; font-size: 12px; font-weight: 700; }}
+.done-todos input[type="checkbox"]::after {{ content: "✓"; color: #000; font-size: 12px; font-weight: 700; }}
 .done-todos span {{ text-decoration: line-through; opacity: .6; }}
 .done-todos small {{ display: block; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); }}
 .done-todos .remove {{ all: unset; cursor: pointer; display: grid; place-items: center; width: 30px; color: var(--muted);
@@ -526,8 +527,12 @@ a {{ color: var(--hud); }}
 li.removed {{ display: none !important; }}
 .todos li.edited span {{ color: var(--hud); }}
 .edit-form {{ flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; border: 1px solid var(--hud); background: var(--glass); }}
-.edit-form input {{ font: 15px "Space Grotesk", sans-serif; color: var(--ink); background: transparent; border: 1px solid var(--line-strong); padding: 6px 8px; }}
-.edit-form input:first-child {{ grid-column: 1 / -1; }}
+.edit-form input {{ appearance: auto; -webkit-appearance: none; width: 100%; height: auto; min-width: 0; margin: 0;
+  font: 15px/1.4 "Space Grotesk", sans-serif; color: var(--ink); background: rgba(0,0,0,.25); border: 1px solid var(--line-strong); padding: 8px 10px; }}
+.edit-form input:focus {{ outline: none; border-color: var(--hud); }}
+.edit-form label {{ display: block; font: 500 11px "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }}
+.edit-form label.full {{ grid-column: 1 / -1; }}
+
 .edit-form .row {{ grid-column: 1 / -1; display: flex; gap: 8px; }}
 .edit-form button {{ font: 500 11px "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
   color: var(--ink); background: var(--hud-soft); border: 1px solid var(--hud); padding: 6px 12px; }}
@@ -536,13 +541,13 @@ li.removed {{ display: none !important; }}
 .inbox li::before {{ display: none; }}
 .inbox small {{ display: block; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); }}
 .todos li::before {{ display: none; }}
-.todos label {{ display: flex; gap: 14px; align-items: flex-start; cursor: pointer; padding: 10px 12px;
+.todos .tmain {{ display: flex; gap: 14px; align-items: flex-start; padding: 10px 12px;
   border: 1px solid var(--line); background: var(--glass); }}
-.todos label:hover {{ border-color: var(--hud); }}
-.todos input {{ appearance: none; -webkit-appearance: none; flex: none; width: 20px; height: 20px; margin: 3px 0 0;
+.todos input[type="checkbox"] {{ appearance: none; -webkit-appearance: none; flex: none; width: 20px; height: 20px; margin: 3px 0 0;
   border: 2px solid var(--hud); background: transparent; cursor: pointer; display: grid; place-items: center; }}
-.todos input:checked {{ background: var(--hud); }}
-.todos input:checked::after {{ content: "✓"; color: #000; font-size: 14px; font-weight: 700; }}
+.todos input[type="checkbox"]:hover {{ box-shadow: 0 0 0 3px var(--hud-soft); }}
+.todos input[type="checkbox"]:checked {{ background: var(--hud); }}
+.todos input[type="checkbox"]:checked::after {{ content: "✓"; color: #000; font-size: 14px; font-weight: 700; }}
 .todos small {{ display: block; font: 400 13px "JetBrains Mono", monospace; color: var(--muted); margin-top: 2px; }}
 .todos li.done span, .todos li.ticked span {{ text-decoration: line-through; opacity: .55; }}
 details.inline {{ margin: 4px 0 0; border: 0; padding: 0; }}
@@ -700,7 +705,7 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
     notes.filter(function (n) {{ return n.kind === "edit"; }}).forEach(function (n) {{
       document.querySelectorAll('ul.todos[data-project="' + n.project + '"] > li').forEach(function (li) {{
         if (li.getAttribute("data-text") !== n.old) return;
-        var span = li.querySelector("label > span"); if (!span) return;
+        var span = li.querySelector(".tmain > span"); if (!span) return;
         span.textContent = n.task;
         var sm = document.createElement("small"); sm.textContent = [n.who, n.when].filter(Boolean).join(" · ");
         span.appendChild(sm); li.classList.add("edited");
@@ -765,14 +770,15 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
     ul.addEventListener("click", function (e) {{
       var ed = e.target.closest("button[data-edit]");
       if (ed) {{
-        var eli = ed.closest("li"), lab = eli.querySelector("label");
+        var eli = ed.closest("li"), lab = eli.querySelector(".tmain");
         if (eli.querySelector(".edit-form")) return;
         var prev = notes.filter(function (n) {{ return n.kind === "edit" && n.project === ul.getAttribute("data-project") && n.old === eli.getAttribute("data-text"); }}).pop();
         var f = document.createElement("form"); f.className = "edit-form";
         [["task", "Task"], ["who", "Who"], ["when", "When"]].forEach(function (k) {{
-          var i = document.createElement("input"); i.name = k[0]; i.setAttribute("aria-label", k[1]); i.placeholder = k[1];
+          var l = document.createElement("label"); l.textContent = k[1]; if (k[0] === "task") l.className = "full";
+          var i = document.createElement("input"); i.type = "text"; i.name = k[0]; i.placeholder = k[1];
           i.value = prev ? prev[k[0]] : (k[0] === "task" ? eli.getAttribute("data-text") : eli.getAttribute("data-" + k[0])) || "";
-          f.appendChild(i);
+          l.appendChild(i); f.appendChild(l);
         }});
         var row = document.createElement("div"); row.className = "row";
         row.innerHTML = '<button type="submit">Save</button><button type="button" class="cancel">Cancel</button>';
