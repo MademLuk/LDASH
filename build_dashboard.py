@@ -160,7 +160,8 @@ def todo_items(d):
         done = raw.lower().startswith("[x]")
         text = raw[3:].strip() if raw[:3].lower() in ("[ ]", "[x]") else raw
         parts = [x.strip() for x in text.split(" · ")]
-        out.append({"done": done, "task": parts[0], "meta": " · ".join(parts[1:])})
+        out.append({"done": done, "task": parts[0], "meta": " · ".join(parts[1:]),
+                    "who": parts[1] if len(parts) > 1 else "", "when": parts[2] if len(parts) > 2 else ""})
     return out
 
 
@@ -172,12 +173,13 @@ def todo_html(eid, items):
         tid = f"{eid}-{i}"
         checked = " checked disabled" if t["done"] else ""
         meta = f'<small>{inline(t["meta"])}</small>' if t["meta"] else ""
-        lis += (f'<li class="todo{" done" if t["done"] else ""}" draggable="true" data-text="{html.escape(t["task"])}">'
+        lis += (f'<li class="todo{" done" if t["done"] else ""}" draggable="true" data-text="{html.escape(t["task"])}" data-who="{html.escape(t["who"])}" data-when="{html.escape(t["when"])}">'
                 f'<span class="grip" aria-hidden="true" title="Drag to change the priority">⋮⋮</span><label>'
                 f'<input type="checkbox" data-task="{tid}" data-project="{eid}" data-text="{html.escape(t["task"])}"{checked}>'
                 f'<span>{inline(t["task"])}{meta}</span></label>'
                 f'<span class="move"><button type="button" data-move="-1" aria-label="Move up">▲</button>'
-                f'<button type="button" data-move="1" aria-label="Move down">▼</button></span></li>')
+                f'<button type="button" data-move="1" aria-label="Move down">▼</button></span>'
+                f'<button type="button" class="edit" data-edit aria-label="Edit this task" title="Edit: text, who, when">✎</button></li>')
     return f'<ul class="todos" data-project="{eid}">{lis}</ul>'
 
 
@@ -228,7 +230,13 @@ def detail(eid, name, tagline, color, d):
         inner = intro_html(d) + "".join(f'<section><h3>{s}</h3>{list_html(d["sections"][s])}</section>' for s in ordered)
         more = f'<details class="more"><summary>More: background, content, leads, numbers</summary>{inner}</details>' if inner else ""
     # KIUB has no change requests: its summary is refreshed by /eotd in the KIUB project
-    notes = "" if eid == "kiub" else NOTES_BLOCK.format(eid=eid, name=name)
+    waiting = [n for n in inbox_notes() if n.get("project") == eid]
+    inbox = ""
+    if waiting:
+        inbox = '<ul class="inbox">' + "".join(
+            f'<li>{html.escape(n.get("text", ""))}<small>{html.escape(str(n.get("created", ""))[:16].replace("T", " "))} · waiting for Claude (6:00, /eotd or on request)</small></li>'
+            for n in waiting) + "</ul>"
+    notes = "" if eid == "kiub" else NOTES_BLOCK.format(eid=eid, name=name, inbox=inbox)
     footer = "".join(f'<p>{inline(x)}</p>' for x in d["footer"])
     footer = f'<details class="src"><summary>Sources</summary>{footer}</details>' if footer else ""
     return f"""
@@ -246,12 +254,21 @@ def detail(eid, name, tagline, color, d):
 
 NOTES_BLOCK = """<section class="notes">
     <h3>Change requests</h3>
+    {inbox}
     <ul class="note-list" data-for="{eid}"></ul>
     <form class="note-form" data-for="{eid}" data-name="{name}">
       <textarea rows="3" placeholder="What should change in the {name} file?" aria-label="Change request for {name}"></textarea>
       <button type="submit">Add</button>
     </form>
   </section>"""
+
+
+def inbox_notes():
+    path = HERE / "_inbox" / "notes.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("notes", [])
+    except (OSError, ValueError):
+        return []
 
 
 def applied_note_ids():
@@ -477,6 +494,20 @@ a {{ color: var(--hud); }}
 .move button {{ all: unset; cursor: pointer; flex: 1; padding: 0 8px; font-size: 10px; color: var(--muted); display: grid; place-items: center; }}
 .move button:hover, .move button:focus-visible {{ color: var(--hud); }}
 .note-list .sent {{ color: var(--s-orange); margin-left: 8px; }}
+.todos .edit {{ all: unset; cursor: pointer; display: grid; place-items: center; width: 30px; color: var(--muted);
+  border: 1px solid var(--line); border-left: 0; background: var(--glass); }}
+.todos .edit:hover, .todos .edit:focus-visible {{ color: var(--hud); }}
+.todos li.edited span {{ color: var(--hud); }}
+.edit-form {{ flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; border: 1px solid var(--hud); background: var(--glass); }}
+.edit-form input {{ font: 15px "Space Grotesk", sans-serif; color: var(--ink); background: transparent; border: 1px solid var(--line-strong); padding: 6px 8px; }}
+.edit-form input:first-child {{ grid-column: 1 / -1; }}
+.edit-form .row {{ grid-column: 1 / -1; display: flex; gap: 8px; }}
+.edit-form button {{ font: 500 11px "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+  color: var(--ink); background: var(--hud-soft); border: 1px solid var(--hud); padding: 6px 12px; }}
+.edit-form button.cancel {{ background: transparent; border-color: var(--line-strong); }}
+.inbox li {{ padding-left: 0; border-left: 2px solid var(--s-orange); padding: 6px 10px; margin: 6px 0; }}
+.inbox li::before {{ display: none; }}
+.inbox small {{ display: block; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); }}
 .todos li::before {{ display: none; }}
 .todos label {{ display: flex; gap: 14px; align-items: flex-start; cursor: pointer; padding: 10px 12px;
   border: 1px solid var(--line); background: var(--glass); }}
@@ -515,7 +546,7 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
     <nav class="tools">
       <a href="{KIUB_DASHBOARD}">KIUB</a>
       <a href="{KIUB_INDEX}">Index</a>
-      <button type="button" id="send-notes" title="Send your change requests: they are applied at 6:00, at /eotd, or when you say apply Ludizm notes">Send notes <span id="ncount">0</span></button>
+      <button type="button" id="send-notes" title="Write your changes into the files">Update <span id="ncount">0</span></button>
       <button type="button" id="theme" aria-label="Switch cockpit or daylight">◐</button>
     </nav>
   </header>
@@ -623,6 +654,15 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
         return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
       }}).forEach(function (li) {{ ul.appendChild(li); }});
     }});
+    notes.filter(function (n) {{ return n.kind === "edit"; }}).forEach(function (n) {{
+      document.querySelectorAll('ul.todos[data-project="' + n.project + '"] > li').forEach(function (li) {{
+        if (li.getAttribute("data-text") !== n.old) return;
+        var span = li.querySelector("label > span"); if (!span) return;
+        span.textContent = n.task;
+        var sm = document.createElement("small"); sm.textContent = [n.who, n.when].filter(Boolean).join(" · ");
+        span.appendChild(sm); li.classList.add("edited");
+      }});
+    }});
     var sb = document.getElementById("send-notes");
     if (notes.length) sb.removeAttribute("data-empty"); else sb.setAttribute("data-empty", "");
   }}
@@ -630,7 +670,8 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
     cb.addEventListener("change", function () {{
       var tid = cb.getAttribute("data-task");
       notes = notes.filter(function (n) {{ return n.task !== tid; }});
-      if (cb.checked) notes.push({{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), task: tid,
+      if (cb.checked) notes.push({{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), task: tid, kind: "done",
+        taskText: cb.getAttribute("data-text"),
         project: cb.getAttribute("data-project"), name: cb.getAttribute("data-project"),
         text: "Done: " + cb.getAttribute("data-text"), created: new Date().toISOString() }});
       store(notes); render();
@@ -670,6 +711,35 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
       ul.querySelectorAll("li").forEach(function (x) {{ x.classList.remove("over-top", "over-bottom"); }});
     }});
     ul.addEventListener("click", function (e) {{
+      var ed = e.target.closest("button[data-edit]");
+      if (ed) {{
+        var eli = ed.closest("li"), lab = eli.querySelector("label");
+        if (eli.querySelector(".edit-form")) return;
+        var prev = notes.filter(function (n) {{ return n.kind === "edit" && n.project === ul.getAttribute("data-project") && n.old === eli.getAttribute("data-text"); }}).pop();
+        var f = document.createElement("form"); f.className = "edit-form";
+        [["task", "Task"], ["who", "Who"], ["when", "When"]].forEach(function (k) {{
+          var i = document.createElement("input"); i.name = k[0]; i.setAttribute("aria-label", k[1]); i.placeholder = k[1];
+          i.value = prev ? prev[k[0]] : (k[0] === "task" ? eli.getAttribute("data-text") : eli.getAttribute("data-" + k[0])) || "";
+          f.appendChild(i);
+        }});
+        var row = document.createElement("div"); row.className = "row";
+        row.innerHTML = '<button type="submit">Save</button><button type="button" class="cancel">Cancel</button>';
+        f.appendChild(row); lab.hidden = true; eli.insertBefore(f, lab.nextSibling); eli.draggable = false;
+        f.querySelector("input").focus();
+        function close() {{ f.remove(); lab.hidden = false; eli.draggable = true; }}
+        row.querySelector(".cancel").addEventListener("click", close);
+        f.addEventListener("submit", function (ev) {{
+          ev.preventDefault();
+          var pid = ul.getAttribute("data-project"), old = eli.getAttribute("data-text");
+          notes = notes.filter(function (n) {{ return !(n.kind === "edit" && n.project === pid && n.old === old); }});
+          var v = {{ task: f.task.value.trim() || old, who: f.who.value.trim(), when: f.when.value.trim() }};
+          notes.push({{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: "edit", project: pid, name: pid,
+            old: old, task: v.task, who: v.who, when: v.when,
+            text: "Edit: " + old + " → " + [v.task, v.who, v.when].filter(Boolean).join(" · "), created: new Date().toISOString() }});
+          store(notes); close(); render();
+        }});
+        return;
+      }}
       var b = e.target.closest("button[data-move]"); if (!b) return;
       var li = b.closest("li"), step = +b.getAttribute("data-move");
       var other = step < 0 ? li.previousElementSibling : li.nextElementSibling;
@@ -688,8 +758,25 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
       store(notes); ta.value = ""; render();
     }});
   }});
+  var helper = false;
+  if (location.protocol.indexOf("http") === 0) {{
+    fetch("/api/ping").then(function (r) {{ return r.json(); }}).then(function (j) {{ helper = !!j.ok; }}).catch(function () {{}});
+  }}
   document.getElementById("send-notes").addEventListener("click", function () {{
-    if (!notes.length) {{ toast("No notes yet. Open a project and add a change request."); return; }}
+    if (!notes.length) {{ toast("Nothing to update yet."); return; }}
+    if (helper) {{
+      fetch("/api/update", {{ method: "POST", headers: {{ "Content-Type": "application/json", "X-Ludizm": "1" }},
+        body: JSON.stringify({{ changes: notes }}) }})
+        .then(function (r) {{ return r.json(); }})
+        .then(function (j) {{
+          if (!j.ok) throw new Error("refused");
+          notes = []; store(notes);
+          toast("Updated: " + j.applied.length + " change(s) written" + (j.notes_for_claude ? ", " + j.notes_for_claude + " note(s) kept for Claude" : "") + ".");
+          setTimeout(function () {{ location.reload(); }}, 1200);
+        }})
+        .catch(function () {{ toast("The helper did not answer. Nothing was lost: try again in a moment."); }});
+      return;
+    }}
     var day = new Date().toISOString().slice(0, 10), name = "ludizm_notes_" + day + ".json";
     var blob = new Blob([JSON.stringify({{ app: "ludizm", saved: new Date().toISOString(), notes: notes }}, null, 2)], {{ type: "application/json" }});
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
