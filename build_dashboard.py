@@ -166,21 +166,30 @@ def todo_items(d):
 
 
 def todo_html(eid, items):
-    if not items:
-        return '<p class="empty">No tasks yet</p>'
-    lis = ""
-    for i, t in enumerate(items):
+    """Open tasks first (draggable, in priority order), then a folded green 'Done' list."""
+    def li(i, t):
         tid = f"{eid}-{i}"
         checked = " checked disabled" if t["done"] else ""
         meta = f'<small>{inline(t["meta"])}</small>' if t["meta"] else ""
-        lis += (f'<li class="todo{" done" if t["done"] else ""}" draggable="true" data-text="{html.escape(t["task"])}" data-who="{html.escape(t["who"])}" data-when="{html.escape(t["when"])}">'
-                f'<span class="grip" aria-hidden="true" title="Drag to change the priority">⋮⋮</span><label>'
+        drag = "" if t["done"] else ' draggable="true"'
+        grip = "" if t["done"] else '<span class="grip" aria-hidden="true" title="Drag to change the priority">⋮⋮</span>'
+        tools = "" if t["done"] else (
+            '<span class="move"><button type="button" data-move="-1" aria-label="Move up">▲</button>'
+            '<button type="button" data-move="1" aria-label="Move down">▼</button></span>'
+            '<button type="button" class="edit" data-edit aria-label="Edit this task" title="Edit: text, who, when">✎</button>')
+        return (f'<li class="todo{" done" if t["done"] else ""}"{drag} data-text="{html.escape(t["task"])}" data-who="{html.escape(t["who"])}" data-when="{html.escape(t["when"])}">'
+                f'{grip}<label>'
                 f'<input type="checkbox" data-task="{tid}" data-project="{eid}" data-text="{html.escape(t["task"])}"{checked}>'
-                f'<span>{inline(t["task"])}{meta}</span></label>'
-                f'<span class="move"><button type="button" data-move="-1" aria-label="Move up">▲</button>'
-                f'<button type="button" data-move="1" aria-label="Move down">▼</button></span>'
-                f'<button type="button" class="edit" data-edit aria-label="Edit this task" title="Edit: text, who, when">✎</button></li>')
-    return f'<ul class="todos" data-project="{eid}">{lis}</ul>'
+                f'<span>{inline(t["task"])}{meta}</span></label>{tools}'
+                f'<button type="button" class="edit remove" data-remove aria-label="Remove this task" title="Remove this task">🗑</button></li>')
+    open_li = "".join(li(i, t) for i, t in enumerate(items) if not t["done"])
+    done_li = "".join(li(i, t) for i, t in enumerate(items) if t["done"])
+    n_done = sum(1 for t in items if t["done"])
+    empty = '' if open_li else '<p class="empty">No open tasks</p>'
+    return (f'{empty}<ul class="todos" data-project="{eid}">{open_li}</ul>'
+            f'<details class="done-wrap" data-project="{eid}"{"" if n_done else " hidden"}>'
+            f'<summary>Done (<span class="done-n">{n_done}</span>)</summary>'
+            f'<ul class="done-todos" data-project="{eid}">{done_li}</ul></details>')
 
 
 def tile(idx, eid, name, color, d):
@@ -497,6 +506,24 @@ a {{ color: var(--hud); }}
 .todos .edit {{ all: unset; cursor: pointer; display: grid; place-items: center; width: 30px; color: var(--muted);
   border: 1px solid var(--line); border-left: 0; background: var(--glass); }}
 .todos .edit:hover, .todos .edit:focus-visible {{ color: var(--hud); }}
+.todos .remove {{ font-size: 13px; }}
+.todos .remove:hover, .todos .remove:focus-visible {{ color: var(--s-red); }}
+.done-todos {{ margin-top: 8px; }}
+.done-todos li {{ padding-left: 0; margin: 4px 0; display: flex; align-items: stretch; }}
+.done-todos li::before {{ display: none; }}
+.done-todos label {{ flex: 1; display: flex; gap: 14px; align-items: flex-start; padding: 8px 12px; border: 1px solid var(--line); background: var(--glass); }}
+.done-todos input {{ appearance: none; -webkit-appearance: none; flex: none; width: 18px; height: 18px; margin: 3px 0 0;
+  border: 2px solid var(--s-green); background: var(--s-green); display: grid; place-items: center; }}
+.done-todos input::after {{ content: "✓"; color: #000; font-size: 12px; font-weight: 700; }}
+.done-todos span {{ text-decoration: line-through; opacity: .6; }}
+.done-todos small {{ display: block; font: 400 12px "JetBrains Mono", monospace; color: var(--muted); }}
+.done-todos .remove {{ all: unset; cursor: pointer; display: grid; place-items: center; width: 30px; color: var(--muted);
+  border: 1px solid var(--line); border-left: 0; background: var(--glass); font-size: 13px; }}
+.done-todos .remove:hover {{ color: var(--s-red); }}
+.done-wrap {{ margin-top: 12px; border: 0; padding: 0; }}
+.done-wrap > summary {{ color: var(--s-green); font: 600 14px "Rajdhani", sans-serif; letter-spacing: .14em; text-transform: uppercase; }}
+.done-wrap > summary:hover {{ color: var(--s-green); filter: brightness(1.2); }}
+li.removed {{ display: none !important; }}
 .todos li.edited span {{ color: var(--hud); }}
 .edit-form {{ flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; border: 1px solid var(--hud); background: var(--glass); }}
 .edit-form input {{ font: 15px "Space Grotesk", sans-serif; color: var(--ink); background: transparent; border: 1px solid var(--line-strong); padding: 6px 8px; }}
@@ -654,6 +681,22 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
         return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
       }}).forEach(function (li) {{ ul.appendChild(li); }});
     }});
+    document.querySelectorAll("li.todo").forEach(function (li) {{
+      var ul = li.parentNode, pid = ul.getAttribute("data-project");
+      li.classList.toggle("removed", notes.some(function (n) {{
+        return n.kind === "remove" && n.project === pid && n.taskText === li.getAttribute("data-text"); }}));
+    }});
+    document.querySelectorAll("input[data-task]:not([disabled])").forEach(function (cb) {{
+      var li = cb.closest("li"), pid = cb.getAttribute("data-project");
+      var openUl = document.querySelector('ul.todos[data-project="' + pid + '"]');
+      var doneUl = document.querySelector('ul.done-todos[data-project="' + pid + '"]');
+      if (cb.checked && li.parentNode !== doneUl) doneUl.appendChild(li);
+      if (!cb.checked && li.parentNode === doneUl) openUl.appendChild(li);
+    }});
+    document.querySelectorAll("details.done-wrap").forEach(function (d) {{
+      var n = d.querySelectorAll("li.todo:not(.removed)").length;
+      d.querySelector(".done-n").textContent = n; d.hidden = !n;
+    }});
     notes.filter(function (n) {{ return n.kind === "edit"; }}).forEach(function (n) {{
       document.querySelectorAll('ul.todos[data-project="' + n.project + '"] > li').forEach(function (li) {{
         if (li.getAttribute("data-text") !== n.old) return;
@@ -685,6 +728,15 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
       order: order, text: "New priority order: " + order.join(" > "), created: new Date().toISOString() }});
     store(notes); render();
   }}
+  document.addEventListener("click", function (e) {{
+    var b = e.target.closest("button[data-remove]"); if (!b) return;
+    var li = b.closest("li"), pid = li.parentNode.getAttribute("data-project"), t = li.getAttribute("data-text");
+    notes = notes.filter(function (n) {{ return !(n.project === pid && (n.taskText === t || n.old === t)); }});
+    notes.push({{ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), kind: "remove", project: pid, name: pid,
+      taskText: t, text: "Remove: " + t, created: new Date().toISOString() }});
+    store(notes); render();
+    toast("Removed. Press Update to write it into the file.");
+  }});
   var dragged = null;
   document.querySelectorAll("ul.todos").forEach(function (ul) {{
     ul.addEventListener("dragstart", function (e) {{

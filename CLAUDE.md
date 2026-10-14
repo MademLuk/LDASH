@@ -45,7 +45,7 @@ When a work session on any project ends, rewrite that project's state file:
 1. Change `Last update` to today's date.
 2. Rewrite `Headline:` and `Next date:` (under `Status:`). They are the only text on the dashboard tile: one short line each, no detail.
 3. Rewrite the sections. They show only when Lude opens the tile, so **keep them short**: one idea per line, about 15 words at most, no file paths (paths go in `Sources:`). Now: 3 to 4 lines.
-   **`## To do`** (all elements except KIUB): a checklist, 7 tasks at most, one line each: `- [ ] What · Who · When`. Concrete actions only. Tick finished tasks `- [x]` and remove them at the next update.
+   **`## To do`** (all elements except KIUB): a checklist, 7 tasks at most, one line each: `- [ ] What · Who · When`. Concrete actions only. Open tasks first, in Lude's priority order (Lude reorders them on the dashboard). Finished tasks are ticked `- [x]` and moved to the bottom: the dashboard shows them in a folded green "Done" list. Keep the 7 most recent done tasks, drop older ones.
 4. Mark anything not confirmed as `TO CHECK`.
 5. Then refresh the matching row in `LUDIZM_DASHBOARD.md` (key dates and human KPI live there too).
 6. Rebuild the visual dashboard: `python3 build_dashboard.py` in this folder. It refreshes `LUDIZM_DASHBOARD.html`, so the bookmark shows the new version.

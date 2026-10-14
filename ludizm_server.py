@@ -74,6 +74,12 @@ def apply_structured(project, changes):
                     tasks[i] = l.replace("- [ ]", "- [x]", 1)
                     done.append("ticked: " + task_of(l))
     for c in changes:
+        if c.get("kind") == "remove":
+            before = len(tasks)
+            tasks = [l for l in tasks if task_of(l) != c.get("taskText")]
+            if len(tasks) < before:
+                done.append("removed: " + str(c.get("taskText")))
+    for c in changes:
         if c.get("kind") == "edit":
             for i, l in enumerate(tasks):
                 if task_of(l) == c.get("old"):
@@ -82,6 +88,8 @@ def apply_structured(project, changes):
                     tasks[i] = box + " " + " · ".join(p for p in parts if p)
                     done.append("edited: " + parts[0])
     if done:
+        # open tasks first (Lude's priority order), finished ones at the bottom (the Done list)
+        tasks = [l for l in tasks if l.startswith("- [ ]")] + [l for l in tasks if not l.startswith("- [ ]")]
         lines[start:end] = tasks
         text = "\n".join(lines)
         text = re.sub(r"^Last update: .*$", "Last update: " + date.today().isoformat(), text, count=1, flags=re.M)
@@ -143,10 +151,10 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(400, {"ok": False, "error": "bad data"})
         applied, notes = [], []
         for project in FILES:
-            mine = [c for c in changes if c.get("project") == project and c.get("kind") in ("order", "done", "edit")]
+            mine = [c for c in changes if c.get("project") == project and c.get("kind") in ("order", "done", "edit", "remove")]
             if mine:
                 applied += [project + ": " + x for x in apply_structured(project, mine)]
-        notes = [c for c in changes if c.get("project") in FILES and c.get("kind") not in ("order", "done", "edit")]
+        notes = [c for c in changes if c.get("project") in FILES and c.get("kind") not in ("order", "done", "edit", "remove")]
         if notes:
             keep_for_claude(notes)
         if applied or notes:
