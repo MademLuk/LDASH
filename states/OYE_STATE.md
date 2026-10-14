@@ -1,15 +1,15 @@
 # OYE PROD STATE
-Last update: 2026-10-10
+Last update: 2026-10-14
 Status: green
 Headline: PIH Malawi editing, site live with 18 films
-Next date: PIH delivery mid-October
+Next date: PIH delivery end of November
 
 ## Now (this week)
-- **PIH editing, First Cohort Intensive (Malawi):** due mid-October. Translation, subtitles, proofreading. Paid work.
+- **PIH editing, First Cohort Intensive (Malawi):** due end of November. Translation, subtitles, proofreading. Paid work.
 - oyeprod.com live on Vercel since 2 October (EN/PL, **18 films**: 17 + showreel, confirmed).
 
 ## To do
-- [ ] Deliver the PIH Malawi editing: translation, subtitles, proofreading · Lude · mid-October
+- [ ] Deliver the PIH Malawi editing: translation, subtitles, proofreading · Lude · end of November
 - [ ] Confirm PIH cohort 2: dates, scope, fee · Lude · October
 - [ ] Make the film thumbnails in Canva · Lude · TO CHECK
 - [ ] Add the 7 missing team bios to the site · Lude · TO CHECK
