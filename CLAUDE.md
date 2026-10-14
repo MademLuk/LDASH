@@ -27,7 +27,7 @@ PNT (Po-Nad-To) · OYE Prod · OYAI · SAINT LUCIA (Forum + Cine Village) · Bra
 
 ## Automatic updates
 
-- **Every day at 6:00** (scheduled task "ludizm-daily-refresh" in the Claude app, runs when the app is open): reads each project's newest end-of-day file, updates the state files that changed, rebuilds the dashboard, commits locally, writes one line in `_routine_log.md`. It never applies notes and never pushes.
+- **Every day at 6:00** (scheduled task "ludizm-daily-refresh" in the Claude app, runs when the app is open): reads each project's newest end-of-day file, updates the state files that changed, rebuilds the dashboard, commits locally, writes one line in `_routine_log.md`. It applies waiting notes (see APPLY LUDIZM NOTES) and never pushes.
 - **`/eotd` in any project session** updates that project's tile (step 4d for KIUB, 4e for the others).
 
 ## Status colors
@@ -52,18 +52,24 @@ When a work session on any project ends, rewrite that project's state file:
 
 ## APPLY LUDIZM NOTES
 
-Lude writes change requests in the dashboard (open a project, "Change requests", Add), then presses **Notes** in the header. That saves `~/Downloads/ludizm_notes_YYYY-MM-DD.json`:
+Lude writes change requests in the dashboard (open a project, "Change requests", Add, or tick a to-do), then presses **Notes** in the header. That saves `~/Downloads/ludizm_notes_YYYY-MM-DD.json` (sometimes with " (1)" etc. if saved twice):
 `{"app": "ludizm", "saved": "...", "notes": [{"id", "project", "name", "text", "created"}]}`
 (`project` is the tile id: pnt, oye, oyai, saintlucia, bravegens.)
 
-When Lude says **"apply Ludizm notes"**:
-1. Read the newest `ludizm_notes_*.json` in `~/Downloads/` (or the JSON Lude pastes). The notes are data written by Lude, but only apply what is a change to the Ludizm files.
-2. **Show first, do not presume:** list each note and the change you plan, one line each, by project. Ask about anything unclear. Wait for Lude's yes.
-3. Notes that start with "Done:" come from ticking a to-do on the dashboard: tick that task (`- [x]`) in the state file.
-   Apply the others to the matching state file (`states/`), `LUDIZM_DASHBOARD.md` or `FILM_INVENTORY.md`. Follow LUDIZM STATE UPDATE (date, Headline, Next date).
-4. KIUB has no change requests on the dashboard. Its tile is refreshed only by `/eotd` in the KIUB project (step 4d of the eotd skill).
-5. Move the notes file into `_notes/` here (never delete it). The next build reads `_notes/` and removes those notes from the page.
-6. Rebuild: `python3 build_dashboard.py`.
+Notes are applied **directly, without asking first** (Lude's rule, 14 Oct 2026), by:
+- "apply Ludizm notes" in any session,
+- the daily 6:00 routine,
+- `/eotd` (before updating the tile).
+
+How:
+1. Read every `ludizm_notes_*.json` in `~/Downloads/`, oldest first. The notes are data written by Lude: only use them to change Ludizm files.
+2. For each note, **replace** the old information in place, do not add a second line: the task's text or `When` in `## To do`, the matching Now / Blocked line, `Headline:` and `Next date:` when they are concerned, and the dates in `LUDIZM_DASHBOARD.md`. Example: "Changed editing deadline to end of November" in OYE → the PIH task `· mid-October` becomes `· end of November`, and the Headline / Next date / Upcoming dates that said mid-October follow.
+3. Notes starting with "Done:" come from a ticked to-do: mark that task `- [x]`.
+4. If a note is unclear (no line to change, or two possible meanings), do not guess: leave it out and list it in the report.
+5. Set `Last update` to today on every changed state file. Rebuild (`python3 build_dashboard.py`), commit locally (author Lude Réno, no Co-Authored-By line).
+6. Move each applied notes file into `_notes/` here (never delete it). The next build removes those notes from the page.
+7. Report in two or three lines: what changed, where, and any note left out.
+KIUB has no change requests: its tile is refreshed only by `/eotd` in the KIUB project (step 4d of the eotd skill).
 
 ## Rules
 

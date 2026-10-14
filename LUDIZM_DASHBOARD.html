@@ -228,7 +228,7 @@ details.src { border: 0; padding: 0; margin-top: 18px; }
     <nav class="tools">
       <a href="file:///Users/lude/Desktop/PNT%20-%20OYE/2_KIUB%20/KIUB%202026%20Taff/MEGA_DOC_2026_Taff%20Claude/00_KIUB_DASHBOARD.html">KIUB</a>
       <a href="file:///Users/lude/Desktop/PNT%20-%20OYE/2_KIUB%20/KIUB%202026%20Taff/MEGA_DOC_2026_Taff%20Claude/KIUB_KNOWLEDGE_INDEX.html">Index</a>
-      <button type="button" id="send-notes" title="Save your change requests for Claude">Notes <span id="ncount">0</span></button>
+      <button type="button" id="send-notes" title="Send your change requests: they are applied at 6:00, at /eotd, or when you say apply Ludizm notes">Send notes <span id="ncount">0</span></button>
       <button type="button" id="theme" aria-label="Switch cockpit or daylight">◐</button>
     </nav>
   </header>
@@ -291,7 +291,7 @@ details.src { border: 0; padding: 0; margin-top: 18px; }
 
   <footer class="foot">
     <q>My job is a success when Yusuf, Daniel... understands that he and his friends can do great things.</q>
-    <span class="label">本 · 19 to check · 99 films (87 online) · built 14 October 2026, 10:05</span>
+    <span class="label">本 · 19 to check · 99 films (87 online) · built 14 October 2026, 11:05</span>
   </footer>
 </div>
 
@@ -497,7 +497,7 @@ details.src { border: 0; padding: 0; margin-top: 18px; }
     var blob = new Blob([JSON.stringify({ app: "ludizm", saved: new Date().toISOString(), notes: notes }, null, 2)], { type: "application/json" });
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
-    toast("Saved " + name + " in Downloads. Tell Claude: apply Ludizm notes.");
+    toast("Sent (" + name + " in Downloads). Applied at 6:00, or now if you tell Claude: apply Ludizm notes.");
   });
   render();
 

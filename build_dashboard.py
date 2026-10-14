@@ -501,7 +501,7 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
     <nav class="tools">
       <a href="{KIUB_DASHBOARD}">KIUB</a>
       <a href="{KIUB_INDEX}">Index</a>
-      <button type="button" id="send-notes" title="Save your change requests for Claude">Notes <span id="ncount">0</span></button>
+      <button type="button" id="send-notes" title="Send your change requests: they are applied at 6:00, at /eotd, or when you say apply Ludizm notes">Send notes <span id="ncount">0</span></button>
       <button type="button" id="theme" aria-label="Switch cockpit or daylight">◐</button>
     </nav>
   </header>
@@ -627,7 +627,7 @@ details.src {{ border: 0; padding: 0; margin-top: 18px; }}
     var blob = new Blob([JSON.stringify({{ app: "ludizm", saved: new Date().toISOString(), notes: notes }}, null, 2)], {{ type: "application/json" }});
     var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
-    toast("Saved " + name + " in Downloads. Tell Claude: apply Ludizm notes.");
+    toast("Sent (" + name + " in Downloads). Applied at 6:00, or now if you tell Claude: apply Ludizm notes.");
   }});
   render();
 
